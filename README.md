@@ -33,6 +33,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch08-s3/` | Chapter 8 — Amazon S3 |
 | `ch13-spark/` | Chapter 13 — Apache Spark |
 | `ch14-dbt/` | Chapter 14 — dbt |
+| `ch17-pandas/` | Chapter 17 — pandas |
 
 ## How to use this repository
 
