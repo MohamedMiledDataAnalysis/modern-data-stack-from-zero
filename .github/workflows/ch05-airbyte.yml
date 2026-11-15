@@ -48,3 +48,8 @@ jobs:
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM airbyte_raw.dim_product;"
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "\d airbyte_raw.dim_product"
 
+      - name: Exercises 2 and 3
+        run: |
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM (SELECT DISTINCT ON (order_id) * FROM airbyte_raw.fact_orders ORDER BY order_id, _airbyte_extracted_at DESC) t;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(DISTINCT _airbyte_extracted_at) AS stamps, COUNT(DISTINCT date_trunc('minute', _airbyte_extracted_at)) AS minutes, COUNT(DISTINCT _airbyte_generation_id) AS generations FROM airbyte_raw.fact_orders;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT _airbyte_generation_id, COUNT(*) FROM airbyte_raw.fact_orders GROUP BY 1 ORDER BY 1;"
