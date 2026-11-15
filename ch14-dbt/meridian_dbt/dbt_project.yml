@@ -1,0 +1,15 @@
+name: meridian_dbt
+version: '1.0.0'
+profile: meridian_dbt
+
+model-paths: ["models"]
+test-paths: ["tests"]
+
+models:
+  meridian_dbt:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: table
+    marts:
+      +materialized: table

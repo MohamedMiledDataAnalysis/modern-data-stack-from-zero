@@ -1,0 +1,12 @@
+meridian_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: meridian_user
+      pass: meridian2024
+      dbname: meridian_db
+      schema: dbt_dev
+      threads: 4

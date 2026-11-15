@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: meridian
+    schema: public
+    tables:
+      - name: fact_orders
+      - name: dim_customer
+      - name: dim_product
+      - name: dim_country
+      - name: dim_category
