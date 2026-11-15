@@ -1,0 +1,22 @@
+name: Chapter 3 - NiFi
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch03-nifi/**', '.github/workflows/ch03-nifi.yml']
+jobs:
+  nifi:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start NiFi 2.12.0 exactly as the book does
+        run: |
+          mkdir -p ~/meridian/nifi
+          bash ch03-nifi/start_nifi.sh
+      - name: Wait for the UI
+        run: |
+          for i in $(seq 1 60); do
+            if docker logs nifi 2>&1 | grep -q "NiFi has started"; then break; fi
+            sleep 5
+          done
+          docker logs nifi 2>&1 | grep -A3 "NiFi has started"
+          curl -sk -o /dev/null -w "UI HTTP %{http_code}\n" https://localhost:8443/nifi/
