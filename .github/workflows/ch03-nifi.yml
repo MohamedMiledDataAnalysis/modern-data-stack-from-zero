@@ -15,8 +15,10 @@ jobs:
       - name: Wait for the UI
         run: |
           for i in $(seq 1 60); do
-            if docker logs nifi 2>&1 | grep -q "NiFi has started"; then break; fi
+            code=$(curl -sk -o /dev/null -w "%{http_code}" https://localhost:8443/nifi/ || true)
+            if [ "$code" = "200" ]; then echo "UI answered after $((i*5)) s"; break; fi
             sleep 5
           done
-          docker logs nifi 2>&1 | grep -A3 "NiFi has started"
+          echo "--- log lines mentioning start ---"
+          docker logs nifi 2>&1 | grep -iE "started|UI is available|https://" | tail -10
           curl -sk -o /dev/null -w "UI HTTP %{http_code}\n" https://localhost:8443/nifi/
