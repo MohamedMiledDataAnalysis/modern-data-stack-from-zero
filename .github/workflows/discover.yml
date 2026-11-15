@@ -1,0 +1,13 @@
+name: Discover image versions
+on: workflow_dispatch
+jobs:
+  tags:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          for repo in apache/kafka apache/superset grafana/grafana prom/prometheus apache/airflow; do
+            echo "== $repo"
+            curl -s "https://hub.docker.com/v2/repositories/$repo/tags?page_size=40&ordering=last_updated" \
+              | python3 -c "import sys,json; print(' '.join(t['name'] for t in json.load(sys.stdin)['results']))"
+          done
+          docker run --rm apache/kafka:latest /opt/kafka/bin/kafka-topics.sh --version
