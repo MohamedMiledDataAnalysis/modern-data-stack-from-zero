@@ -34,6 +34,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch13-spark/` | Chapter 13 — Apache Spark |
 | `ch14-dbt/` | Chapter 14 — dbt |
 | `ch17-pandas/` | Chapter 17 — pandas |
+| `ch18-python-analysis/` | Chapter 18 — Python for analysis |
 
 ## How to use this repository
 
