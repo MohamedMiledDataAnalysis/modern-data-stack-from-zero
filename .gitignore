@@ -9,3 +9,4 @@ dbt_packages/
 logs/
 target/
 monthly_revenue.png
+revenue_by_country.png

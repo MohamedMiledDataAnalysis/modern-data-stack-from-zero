@@ -1,0 +1,29 @@
+name: Chapter 19 - R
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch19-r/**', '.github/workflows/ch19-r.yml']
+jobs:
+  r:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary Faker==40.54.0 && python data/generate_meridian.py
+      - uses: r-lib/actions/setup-r@v2
+        with: {r-version: 'release', use-public-rspm: true}
+      - name: Install packages from CRAN
+        run: Rscript -e 'install.packages(c("DBI","RPostgres","dplyr","ggplot2"))'
+      - name: Analysis
+        run: cd ch19-r && Rscript analysis.R
+      - name: Exercises
+        run: cd ch19-r && Rscript solutions/exercises.R
+      - uses: actions/upload-artifact@v4
+        with: {name: ch19-chart, path: ch19-r/revenue_by_country.png}
