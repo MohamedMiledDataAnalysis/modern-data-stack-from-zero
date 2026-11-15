@@ -37,6 +37,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch18-python-analysis/` | Chapter 18 — Python for analysis |
 | `ch19-r/` | Chapter 19 — R for analysis |
 | `ch21-scikit-learn/` | Chapter 21 — scikit-learn |
+| `ch22-statsmodels/` | Chapter 22 — statsmodels |
 
 ## How to use this repository
 
