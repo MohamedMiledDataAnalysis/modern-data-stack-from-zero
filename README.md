@@ -35,6 +35,8 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch14-dbt/` | Chapter 14 — dbt |
 | `ch17-pandas/` | Chapter 17 — pandas |
 | `ch18-python-analysis/` | Chapter 18 — Python for analysis |
+| `ch19-r/` | Chapter 19 — R for analysis |
+| `ch21-scikit-learn/` | Chapter 21 — scikit-learn |
 
 ## How to use this repository
 
