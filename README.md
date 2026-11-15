@@ -40,6 +40,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch21-scikit-learn/` | Chapter 21 — scikit-learn |
 | `ch22-statsmodels/` | Chapter 22 — statsmodels |
 | `ch28-streamlit/` | Chapter 28 — Streamlit |
+| `ch29-fastapi/` | Chapter 29 — FastAPI |
 
 ## How to use this repository
 
