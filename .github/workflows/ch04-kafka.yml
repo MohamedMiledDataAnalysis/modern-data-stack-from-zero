@@ -1,0 +1,63 @@
+name: Chapter 4 - Kafka
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch04-kafka/**', 'data/**', '.github/workflows/ch04-kafka.yml']
+jobs:
+  kafka:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: meridian_user
+          POSTGRES_PASSWORD: meridian2024
+          POSTGRES_DB: meridian_db
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q -r ch04-kafka/requirements.txt
+      - name: Load Meridian
+        run: python data/generate_meridian.py
+      - name: Step 1-2 start Kafka and create the topic
+        run: bash ch04-kafka/start_kafka.sh
+      - name: Step 3 producer
+        run: cd ch04-kafka && python producer.py
+      - name: Step 4 console consumer, first 3 events
+        run: |
+          docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+            --topic meridian.orders --partition 0 --offset 0 --max-messages 3 \
+            --property print.key=true --property print.offset=true
+      - name: Step 5 consumer to PostgreSQL
+        run: cd ch04-kafka && python consumer.py loader-1
+      - name: Step 6 run again
+        run: cd ch04-kafka && python consumer.py loader-1
+      - name: Step 7 describe group
+        run: docker exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group meridian-loader
+      - name: Check table
+        run: |
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT kafka_partition, COUNT(*), MIN(kafka_offset), MAX(kafka_offset) FROM orders_stream GROUP BY 1 ORDER BY 1;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT customer_id, COUNT(DISTINCT kafka_partition) AS partitions FROM orders_stream GROUP BY 1 HAVING COUNT(*) > 1 ORDER BY 1 LIMIT 3;"
+      - name: Exercise reset offsets
+        run: |
+          docker exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+            --group meridian-loader --topic meridian.orders --reset-offsets --to-earliest --execute
+          cd ch04-kafka && python consumer.py loader-1
+      - name: Exercise two consumers
+        run: |
+          docker exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+            --group meridian-loader --topic meridian.orders --reset-offsets --to-earliest --execute > /dev/null
+          cd ch04-kafka
+          python consumer.py loader-A & python consumer.py loader-B & wait
+      - name: Mistake new group with latest
+        run: |
+          cd ch04-kafka
+          sed -e "s/'earliest'/'latest'/" -e "s/meridian-loader/meridian-late/" consumer.py > late.py
+          python late.py late-1
+      - name: Exercise extra producer run
+        run: |
+          cd ch04-kafka && python producer.py && python consumer.py loader-1
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM orders_stream;"
