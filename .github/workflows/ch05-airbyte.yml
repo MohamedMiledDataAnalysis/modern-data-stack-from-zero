@@ -1,0 +1,25 @@
+name: Chapter 5 - Airbyte
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch05-airbyte/**', '.github/workflows/ch05-airbyte.yml']
+jobs:
+  airbyte:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install abctl
+        run: |
+          curl -LsfS https://get.airbyte.com | bash -
+          abctl version
+      - name: Install Airbyte locally (low-resource mode)
+        run: abctl local install --low-resource-mode 2>&1 | tail -25
+      - name: Credentials
+        run: abctl local credentials
+      - name: Health
+        run: |
+          curl -s -o /dev/null -w "UI HTTP %{http_code}\n" http://localhost:8000/
+          curl -s http://localhost:8000/api/v1/health; echo
+      - name: Status
+        run: abctl local status 2>&1 | tail -15
