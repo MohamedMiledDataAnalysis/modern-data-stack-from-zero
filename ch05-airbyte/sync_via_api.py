@@ -21,7 +21,7 @@ H = {'Authorization': f'Bearer {token}'}
 def call(method, path, **kw):
     r = requests.request(method, BASE + path, headers=H, timeout=120, **kw)
     if r.status_code >= 400:
-        print(method, path, r.status_code, r.text[:800])
+        print(method, path, r.status_code, r.text[:3000])
         r.raise_for_status()
     return r.json()
 

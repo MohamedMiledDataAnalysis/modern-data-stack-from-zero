@@ -29,8 +29,6 @@ jobs:
           abctl version
       - name: Install Airbyte locally (low-resource mode)
         run: abctl local install --low-resource-mode 2>&1 | tail -25
-      - name: Credentials
-        run: abctl local credentials
       - name: Health
         run: |
           curl -s -o /dev/null -w "UI HTTP %{http_code}\n" http://localhost:8000/
@@ -39,8 +37,8 @@ jobs:
         run: |
           CID=$(abctl local credentials 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | awk '/Client-Id/{print $NF}')
           CSEC=$(abctl local credentials 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | awk '/Client-Secret/{print $NF}')
-          GW=$(docker network inspect kind -f '{{(index .IPAM.Config 0).Gateway}}')
-          echo "kind gateway $GW"
+          GW=$(hostname -I | awk '{print $1}')
+          echo "database host for Airbyte: runner IP"
           python ch05-airbyte/sync_via_api.py "$CID" "$CSEC" "$GW"
       - name: Check the destination
         run: |
