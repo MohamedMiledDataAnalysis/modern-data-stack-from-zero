@@ -1,0 +1,33 @@
+name: Chapter 31 - Shiny
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch31-shiny/**', '.github/workflows/ch31-shiny.yml']
+jobs:
+  shiny:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary Faker==40.54.0 && python data/generate_meridian.py
+      - uses: r-lib/actions/setup-r@v2
+        with: {r-version: 'release', use-public-rspm: true}
+      - run: Rscript -e 'install.packages(c("shiny","bslib","DBI","RPostgres","dplyr","ggplot2"))'
+      - name: Versions
+        run: Rscript -e 'for (p in c("shiny","bslib")) cat(p, as.character(packageVersion(p)), "\n")'
+      - name: Server tests
+        run: cd ch31-shiny && Rscript tests/test-server.R
+      - name: App starts and answers
+        run: |
+          cd ch31-shiny
+          Rscript -e 'shiny::runApp(port = 3838)' > shiny.log 2>&1 &
+          for i in $(seq 1 30); do curl -s -o /dev/null localhost:3838 && break; sleep 2; done
+          curl -s -o /dev/null -w "HTTP %{http_code}\n" localhost:3838
+          head -5 shiny.log
