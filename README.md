@@ -39,9 +39,11 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch20-jupyter/` | Chapter 20 — Jupyter |
 | `ch21-scikit-learn/` | Chapter 21 — scikit-learn |
 | `ch22-statsmodels/` | Chapter 22 — statsmodels |
+| `ch27-excel/` | Chapter 27 — Microsoft Excel |
 | `ch28-streamlit/` | Chapter 28 — Streamlit |
 | `ch29-fastapi/` | Chapter 29 — FastAPI |
 | `ch30-flask/` | Chapter 30 — Flask |
+| `ch31-shiny/` | Chapter 31 — R Shiny |
 
 ## How to use this repository
 

@@ -17,3 +17,5 @@ out_*.ipynb
 out_*.html
 .ipynb_checkpoints/
 .pytest_cache/
+*.xlsx
+!ch02-files-apis-iot/supplier_prices.xlsx
