@@ -6,9 +6,23 @@ on:
 jobs:
   airbyte:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: meridian_user
+          POSTGRES_PASSWORD: meridian2024
+          POSTGRES_DB: meridian_db
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary Faker==40.54.0 requests
+      - name: Load Meridian
+        run: python data/generate_meridian.py
       - name: Install abctl
         run: |
           curl -LsfS https://get.airbyte.com | bash -
@@ -21,5 +35,16 @@ jobs:
         run: |
           curl -s -o /dev/null -w "UI HTTP %{http_code}\n" http://localhost:8000/
           curl -s http://localhost:8000/api/v1/health; echo
-      - name: Status
-        run: abctl local status 2>&1 | tail -15
+      - name: Sync through the API
+        run: |
+          CID=$(abctl local credentials 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | awk '/Client-Id/{print $NF}')
+          CSEC=$(abctl local credentials 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | awk '/Client-Secret/{print $NF}')
+          GW=$(docker network inspect kind -f '{{(index .IPAM.Config 0).Gateway}}')
+          echo "kind gateway $GW"
+          python ch05-airbyte/sync_via_api.py "$CID" "$CSEC" "$GW"
+      - name: Check the destination
+        run: |
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "\dt airbyte_raw.*"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM airbyte_raw.fact_orders;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "\d airbyte_raw.dim_product"
+
