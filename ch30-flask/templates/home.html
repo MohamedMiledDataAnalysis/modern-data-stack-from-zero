@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Completed revenue, {{ year }}</h1>
+<table>
+  <tr><th>Month</th><th>Orders</th><th>Revenue (£)</th></tr>
+  {% for r in rows %}
+  <tr><td>{{ r.month }}</td><td>{{ "{:,}".format(r.orders) }}</td>
+      <td>{{ "{:,.2f}".format(r.revenue) }}</td></tr>
+  {% endfor %}
+</table>
+<p><strong>Total: £{{ "{:,.2f}".format(total) }}</strong></p>
+{% endblock %}

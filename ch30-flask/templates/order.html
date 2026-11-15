@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Find an order</h1>
+<form method="post">
+  <input name="order_id" type="number" min="1" required value="{{ order_id or '' }}">
+  <button type="submit">Search</button>
+</form>
+{% if order_id and found %}
+  <p>Order {{ found.order_id }}: {{ found.quantity }} item(s) on {{ found.order_date }},
+     £{{ found.total_amount }}, <em>{{ found.status }}</em>.</p>
+{% elif order_id %}
+  <p>No order {{ order_id }}.</p>
+{% endif %}
+{% endblock %}
