@@ -26,6 +26,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `data/` | Chapter 1 — the Meridian Retail generator |
 | `ch00-setup/` | Chapter 0 — your machine and your tools |
 | `ch01-postgresql/` | Chapter 1 — SQL databases: PostgreSQL |
+| `ch02-files-apis-iot/` | Chapter 2 — flat files, APIs and IoT streams |
 | `ch14-dbt/` | Chapter 14 — dbt |
 
 ## How to use this repository

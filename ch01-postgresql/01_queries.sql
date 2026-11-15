@@ -1,5 +1,8 @@
 -- Chapter 1 — the queries of Steps 4 to 7, in order
-SELECT * FROM fact_orders ORDER BY order_id LIMIT 5;
+SELECT order_id, order_date, quantity, unit_price, total_amount, status
+FROM fact_orders
+ORDER BY order_id
+LIMIT 5;
 
 SELECT order_id, total_amount
 FROM fact_orders

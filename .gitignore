@@ -1,10 +1,10 @@
-# dbt build output
-target/
-dbt_packages/
-logs/
-# Python
-__pycache__/
-.venv/
 # Never commit the book itself
+# Python
+# dbt build output
 *.pdf
 .user.yml
+.venv/
+__pycache__/
+dbt_packages/
+logs/
+target/
