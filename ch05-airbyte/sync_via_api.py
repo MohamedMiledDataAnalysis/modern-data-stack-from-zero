@@ -29,7 +29,8 @@ def call(method, path, **kw):
 ws = call('GET', '/workspaces')['data'][0]['workspaceId']
 print('workspace', ws)
 pg = {'host': db_host, 'port': 5432, 'database': 'meridian_db',
-      'username': 'meridian_user', 'password': 'meridian2024'}
+      'username': 'meridian_user', 'password': 'meridian2024',
+      'tunnel_method': {'tunnel_method': 'NO_TUNNEL'}}
 src = call('POST', '/sources', json={
     'name': 'Meridian PostgreSQL', 'workspaceId': ws,
     'configuration': {'sourceType': 'postgres', **pg, 'schemas': ['public'],
