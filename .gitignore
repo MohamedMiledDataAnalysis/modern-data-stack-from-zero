@@ -16,3 +16,4 @@ reports/
 out_*.ipynb
 out_*.html
 .ipynb_checkpoints/
+.pytest_cache/
