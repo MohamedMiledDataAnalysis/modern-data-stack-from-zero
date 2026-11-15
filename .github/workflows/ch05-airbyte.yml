@@ -43,6 +43,8 @@ jobs:
       - name: Check the destination
         run: |
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "\dt airbyte_raw.*"
-          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM airbyte_raw.fact_orders;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*), COUNT(DISTINCT order_id), MAX(order_id) FROM airbyte_raw.fact_orders;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT order_id, COUNT(*) FROM airbyte_raw.fact_orders GROUP BY order_id HAVING COUNT(*) > 1;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM airbyte_raw.dim_product;"
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "\d airbyte_raw.dim_product"
 
