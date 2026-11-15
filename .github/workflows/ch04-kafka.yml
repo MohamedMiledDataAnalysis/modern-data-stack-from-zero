@@ -61,3 +61,9 @@ jobs:
         run: |
           cd ch04-kafka && python producer.py && python consumer.py loader-1
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT COUNT(*) FROM orders_stream;"
+      - name: Exercise 3 query
+        run: PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -f ch04-kafka/solutions/exercise_3_one_partition.sql
+      - name: Exercise 4 lag
+        run: |
+          cd ch04-kafka && python producer.py
+          docker exec kafka /opt/kafka/bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group meridian-loader
