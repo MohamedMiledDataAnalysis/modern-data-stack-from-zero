@@ -1,0 +1,36 @@
+name: Chapter 12 - Fabric T-SQL on SQL Server
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch12-fabric/**', '.github/workflows/ch12-tsql.yml']
+jobs:
+  tsql:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env: {ACCEPT_EULA: 'Y', MSSQL_SA_PASSWORD: 'Meridian2026!'}
+        ports: ['1433:1433']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary SQLAlchemy==2.1.8 Faker==40.54.0 pandas==3.1.1 pyarrow==26.0.1 pymssql==2.4.6
+      - run: python data/generate_meridian.py > /dev/null
+      - name: Export Parquet
+        run: cd ch12-fabric && python export_parquet.py
+      - name: Wait for SQL Server
+        run: |
+          for i in $(seq 1 30); do python -c "import pymssql; pymssql.connect('localhost','sa','Meridian2026!').close()" 2>/dev/null && break; sleep 5; done
+          python -c "import pymssql; c=pymssql.connect('localhost','sa','Meridian2026!').cursor(); c.execute('SELECT @@VERSION'); print(c.fetchone()[0].splitlines()[0])"
+      - name: Load
+        run: cd ch12-fabric && python tsql/load_sqlserver.py
+      - name: Queries
+        run: cd ch12-fabric && python tsql/run_sql.py tsql/queries.sql
+      - name: Exercises
+        run: cd ch12-fabric && python tsql/run_sql.py solutions/exercises.sql

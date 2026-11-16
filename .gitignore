@@ -23,3 +23,6 @@ ch32-great-expectations/gx/
 output/
 state.json
 fakesnow_data/
+upload/
+spark-warehouse/
+metastore_db/
