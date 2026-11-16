@@ -33,6 +33,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch08-s3/` | Chapter 8 — Amazon S3 |
 | `ch13-spark/` | Chapter 13 — Apache Spark |
 | `ch14-dbt/` | Chapter 14 — dbt |
+| `ch16-beam/` | Chapter 16 — Apache Beam |
 | `ch17-pandas/` | Chapter 17 — pandas |
 | `ch18-python-analysis/` | Chapter 18 — Python for analysis |
 | `ch19-r/` | Chapter 19 — R for analysis |
