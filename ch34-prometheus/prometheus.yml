@@ -1,0 +1,16 @@
+# Chapter 34 — Prometheus configuration for Meridian
+global:
+  scrape_interval: 15s        # read every target every 15 seconds
+  evaluation_interval: 15s    # check the alert rules every 15 seconds
+
+rule_files:
+  - alert_rules.yml
+
+scrape_configs:
+  - job_name: prometheus      # Prometheus watches itself
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: meridian        # the exporter running on your machine
+    static_configs:
+      - targets: ['host.docker.internal:8001']

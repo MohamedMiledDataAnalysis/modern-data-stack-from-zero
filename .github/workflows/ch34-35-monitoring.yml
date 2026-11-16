@@ -1,0 +1,67 @@
+name: Chapters 34-35 - Prometheus and Grafana
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch34-prometheus/**', 'ch35-grafana/**', '.github/workflows/ch34-35-monitoring.yml']
+jobs:
+  monitoring:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary Faker==40.54.0 prometheus_client==0.26.0 && python data/generate_meridian.py
+      - name: Exporter
+        run: |
+          cd ch34-prometheus && nohup python meridian_exporter.py > exporter.log 2>&1 &
+          sleep 5 && curl -s localhost:8001/metrics | grep '^meridian'
+      - name: Check the config
+        run: |
+          cd ch34-prometheus
+          docker run --rm -v "$PWD:/cfg" --entrypoint promtool prom/prometheus:v3.16.0 check config /cfg/prometheus.yml
+      - name: Start Prometheus
+        run: |
+          cd ch34-prometheus && bash start_prometheus.sh
+          sleep 20
+          docker logs prometheus 2>&1 | grep -E 'Server is ready|Completed loading' | sed 's/time=[^ ]* //'
+      - name: Query Prometheus
+        run: |
+          sleep 60
+          q() { curl -s 'localhost:9090/api/v1/query' --data-urlencode "query=$1" | python3 -c "import sys,json; print([(r['metric'], r['value'][1]) for r in json.load(sys.stdin)['data']['result']])"; }
+          q 'up'
+          q 'meridian_orders'
+          q 'sum(meridian_orders)'
+          q 'meridian_orders{status="returned"} / ignoring(status) sum(meridian_orders)'
+          q 'round((time() - meridian_latest_order_timestamp_seconds) / 86400)'
+          q 'sum by (job) (up)'
+      - name: Alerts
+        run: |
+          sleep 30
+          curl -s localhost:9090/api/v1/alerts | python3 -c "import sys,json; [print(a['labels']['alertname'], a['state'], a['labels']['severity'], '-', a['annotations']['summary']) for a in json.load(sys.stdin)['data']['alerts']]"
+      - name: Stop the exporter and watch the alert
+        run: |
+          pkill -f meridian_exporter
+          sleep 100
+          curl -s localhost:9090/api/v1/alerts | python3 -c "import sys,json; [print(a['labels']['alertname'], a['state']) for a in json.load(sys.stdin)['data']['alerts']]"
+          curl -s 'localhost:9090/api/v1/query' --data-urlencode 'query=up{job="meridian"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['result'][0]['value'])"
+      - name: Grafana
+        run: |
+          cd ch34-prometheus && nohup python meridian_exporter.py > exporter.log 2>&1 &
+          cd ch35-grafana && bash start_grafana.sh
+          for i in $(seq 1 40); do curl -s localhost:3000/api/health > /dev/null && break; sleep 3; done
+          sleep 30
+          echo '== health'; curl -s localhost:3000/api/health; echo
+          echo '== datasources'; curl -s -u admin:meridian2026 localhost:3000/api/datasources | python3 -c "import sys,json; print([(d['name'], d['type'], d['url']) for d in json.load(sys.stdin)])"
+          echo '== datasource health'; curl -s -u admin:meridian2026 localhost:3000/api/datasources/uid/meridian-prometheus/health; echo
+          echo '== dashboards'; curl -s -u admin:meridian2026 'localhost:3000/api/search?query=Meridian' | python3 -c "import sys,json; print([(d['title'], d['uid'], d.get('folderTitle')) for d in json.load(sys.stdin)])"
+          echo '== a panel query through Grafana'
+          curl -s -u admin:meridian2026 -H 'Content-Type: application/json' localhost:3000/api/ds/query \
+            -d '{"queries":[{"refId":"A","datasource":{"uid":"meridian-prometheus"},"expr":"meridian_quality_failed_rows","instant":true}],"from":"now-5m","to":"now"}' \
+            | python3 -c "import sys,json; f=json.load(sys.stdin)['results']['A']['frames'][0]; print(f['schema']['fields'][1].get('labels'), f['data']['values'][1])"
+          docker logs grafana 2>&1 | grep -iE 'HTTP Server Listen|provisioning' | head -5

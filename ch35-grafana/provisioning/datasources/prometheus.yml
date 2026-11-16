@@ -1,0 +1,9 @@
+# Chapter 35 — Grafana reads Prometheus without any clicking
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: meridian-prometheus
+    type: prometheus
+    access: proxy
+    url: http://host.docker.internal:9090
+    isDefault: true

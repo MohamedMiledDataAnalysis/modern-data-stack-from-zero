@@ -1,0 +1,31 @@
+# Chapter 34 — alert rules for Meridian
+groups:
+  - name: meridian
+    rules:
+      - alert: MeridianExporterDown
+        expr: up{job="meridian"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "The Meridian exporter has not answered for 1 minute"
+
+      - alert: MeridianNoOrders
+        expr: meridian_table_rows{table="fact_orders"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "fact_orders is empty"
+
+      - alert: MeridianDataStale
+        expr: (time() - meridian_latest_order_timestamp_seconds) / 86400 > 2
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "No new order for {{ $value | printf \"%.0f\" }} days"
+
+      - alert: MeridianQualityRule
+        expr: meridian_quality_failed_rows > 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "{{ $value }} rows break rule {{ $labels.rule }}"

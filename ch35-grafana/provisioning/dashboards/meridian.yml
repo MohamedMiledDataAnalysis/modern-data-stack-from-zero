@@ -1,0 +1,8 @@
+# Chapter 35 — load every dashboard file from /var/lib/grafana/dashboards
+apiVersion: 1
+providers:
+  - name: meridian
+    folder: Meridian
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
