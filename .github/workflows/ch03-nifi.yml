@@ -2,7 +2,7 @@ name: Chapter 3 - NiFi
 on:
   workflow_dispatch:
   push:
-    paths: ['ch03-nifi/**', '.github/workflows/ch03-nifi.yml']
+    paths: ['ch03-nifi/**', '.github/workflows/ch03-nifi.yml', '.github/scripts/nifi_flow_test.py']
 jobs:
   nifi:
     runs-on: ubuntu-24.04
@@ -22,3 +22,8 @@ jobs:
           echo "--- log lines mentioning start ---"
           docker logs nifi 2>&1 | grep -iE "started|UI is available|https://" | tail -10
           curl -sk -o /dev/null -w "UI HTTP %{http_code}\n" https://localhost:8443/nifi/
+      - name: Build the book's flow through the REST API and run it
+        run: |
+          chmod 777 ~/meridian/nifi/drops ~/meridian/nifi/landed ~/meridian/nifi/quarantine
+          pip install -q requests
+          python .github/scripts/nifi_flow_test.py
