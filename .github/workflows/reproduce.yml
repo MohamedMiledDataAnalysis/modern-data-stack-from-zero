@@ -159,6 +159,20 @@ jobs:
       - name: Chapter 17 - pandas
         if: always()
         run: cd ~/meridian/modern-data-stack-from-zero/ch17-pandas && python pandas_basics.py | tail -8 && python solutions/exercises.py | tail -8
+      - name: Chapter 17 - Step 7, data size (5 and 20 million rows)
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch17-pandas
+          python ../data/scale_up.py --factor 20
+          for e in pandas pandas-lean spark; do python size_test.py $e 2>&1 | grep -E 'rows|^20|^\|20|: [0-9.]+ s'; done
+          python ../data/scale_up.py --factor 80
+          for e in pandas-lean spark; do python size_test.py $e 2>&1 | grep -E 'rows|: [0-9.]+ s'; done
+      - name: Chapter 17 - Step 7, every column on 20 million rows (16 GB runner only)
+        if: always() && matrix.os == 'ubuntu-24.04'
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch17-pandas
+          python size_test.py pandas | grep -E 'rows|: [0-9.]+ s'
+          rm -rf ~/meridian/lake/scaled
       - name: Chapter 18 - Python analysis
         if: always()
         run: cd ~/meridian/modern-data-stack-from-zero/ch18-python-analysis && MPLBACKEND=Agg python analysis.py | tail -8 && MPLBACKEND=Agg python solutions/exercises.py | tail -8
