@@ -22,7 +22,7 @@ separate environments of Chapters 10, 16 and 33. Chapters that need Docker (2's 
 | Ch | Tool | Executed | Where | Not executed |
 |---:|:--|:--|:--|:--|
 | 0 | Setup | `check_setup.py` | Local, `reproduce.yml` | Installers on Windows and macOS; the Ubuntu install commands were run locally only (`reproduce.yml` installs Python and Java with `setup-python` and `setup-java`) |
-| 1 | PostgreSQL | all queries, exercises | Local, `reproduce.yml` | — |
+| 1 | PostgreSQL | all queries, exercises; the CSV files in `data/meridian/` match the generator byte for byte, and loading them gives the same tables | Local, `reproduce.yml` | — |
 | Interlude | SQL dialects | the five queries in `sql-dialects/` | PostgreSQL 16 and Spark SQL: Local, `reproduce.yml`; Snowflake SQL on fakesnow: Local, `reproduce.yml`; T-SQL on SQL Server 2022: `ch12-tsql.yml`; GoogleSQL on the BigQuery emulator: `ch11-bigquery.yml` | query 4 on the BigQuery emulator returns 0 for the running total, an emulator fault; the other 24 results match |
 | 2 | Files, APIs, IoT, SQL Server 2022 | all scripts, mock API, MQTT simulator; SQL Server source (`sqlserver/`) and Exercise 6 | Local, `reproduce.yml` (SQL Server and MQTT on the Ubuntu runner) | SQL Server on macOS was not run: GitHub's macOS runner has no Docker |
 | 3 | NiFi 2.12.0 | start-up; the flow of Steps 3–7 built with the same settings through the REST API, 500 valid / 3 rejected | `ch03-nifi.yml` | the canvas clicks themselves; provenance screens |

@@ -54,6 +54,13 @@ jobs:
           cd ~/meridian/modern-data-stack-from-zero
           PGPASSWORD=postgres psql -h localhost -U postgres -f ch01-postgresql/00_create_user.sql
           python data/generate_meridian.py
+          # The CSV copy of the data in data/meridian/ must match the generator exactly,
+          # and loading it must give back the same tables
+          python data/export_meridian_csv.py
+          git diff --exit-code --stat data/meridian && echo "CSV files match the generator"
+          python data/load_meridian_csv.py
+          python data/export_meridian_csv.py > /dev/null
+          git diff --exit-code --stat data/meridian && echo "CSV route gives the same tables"
           python ch01-postgresql/connect.py
           export PGPASSWORD=meridian2024
           for f in ch01-postgresql/01_queries.sql ch01-postgresql/solutions/*.sql; do

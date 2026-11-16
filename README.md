@@ -19,11 +19,17 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
    ```
    The generator uses a fixed seed (42). With the versions in `requirements.txt`, your data is identical to the data in the book: 10,000 customers, 500 products and 250,000 orders.
 
+   The same five tables are also in `data/meridian/` as CSV files. To load the database from the files instead of generating it:
+   ```bash
+   python data/load_meridian_csv.py
+   ```
+   Both routes give identical tables; the book's automatic tests check it on every change.
+
 ## Folders
 
 | Folder | Chapter |
 |:--|:--|
-| `data/` | Chapter 1 — the Meridian Retail generator |
+| `data/` | Chapter 1 — the Meridian Retail generator, and the data itself as CSV files in `data/meridian/` |
 | `ch00-setup/` | Chapter 0 — your machine and your tools |
 | `ch01-postgresql/` | Chapter 1 — SQL databases: PostgreSQL |
 | `sql-dialects/` | Interlude — SQL, one language, many dialects |
