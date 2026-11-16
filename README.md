@@ -46,6 +46,8 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch31-shiny/` | Chapter 31 — R Shiny |
 | `ch32-great-expectations/` | Chapter 32 — Great Expectations |
 | `ch33-airflow/` | Chapter 33 — Apache Airflow |
+| `ch34-prometheus/` | Chapter 34 — Prometheus |
+| `ch35-grafana/` | Chapter 35 — Grafana |
 
 ## How to use this repository
 
