@@ -1,0 +1,32 @@
+name: Chapter 11 - BigQuery (emulator)
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch11-bigquery/**', '.github/workflows/ch11-bigquery.yml']
+jobs:
+  bigquery:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary SQLAlchemy==2.1.8 Faker==40.54.0 pandas==3.1.1 pyarrow==26.0.1 google-cloud-bigquery==3.47.0 db-dtypes==1.9.0
+      - run: python data/generate_meridian.py > /dev/null
+      - name: Start the emulator as the book does
+        run: |
+          cd ch11-bigquery && bash start_emulator.sh
+          sleep 8 && docker logs bq-emulator 2>&1 | tail -5
+          docker image inspect ghcr.io/goccy/bigquery-emulator:latest --format '{{json .Config.Labels}}'
+          docker exec bq-emulator /bin/bigquery-emulator --version || true
+      - name: Load
+        run: cd ch11-bigquery && python load_bigquery.py
+      - name: Query
+        run: cd ch11-bigquery && python query_bigquery.py
+      - name: Exercises
+        run: cd ch11-bigquery && python solutions/exercises.py
