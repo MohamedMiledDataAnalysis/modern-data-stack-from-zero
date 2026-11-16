@@ -6,7 +6,7 @@ validation = context.validation_definitions.get('orders_check')
 checkpoint = context.checkpoints.add_or_update(gx.Checkpoint(
     name='nightly_orders',
     validation_definitions=[validation],
-    actions=[gx.checkpoint.UpdateDataDocsAction(name='update_docs')],
+    actions=[gx.checkpoint.UpdateDataDocsAction(name='docs')],
     result_format={'result_format': 'COMPLETE'}))
 
 result = checkpoint.run()
