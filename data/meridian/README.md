@@ -17,6 +17,8 @@ Load them into PostgreSQL (Chapter 1) from the repository folder:
 python data/load_meridian_csv.py
 ```
 
-You can also open them in Excel, LibreOffice or pandas. The names in `dim_customer` are invented by Faker;
+You can also read them with pandas (`pd.read_csv`) or open them in LibreOffice Calc. In Excel, use
+*Data → From Text/CSV* rather than a double-click: the files are UTF-8, and a double-click garbles the
+1,571 customer names with accents (Antón becomes AntÃ³n). The names in `dim_customer` are invented by Faker;
 no real person is described. `export_meridian_csv.py` rewrites these files from the database, and the
 book's tests check on every change that they match the generator.
