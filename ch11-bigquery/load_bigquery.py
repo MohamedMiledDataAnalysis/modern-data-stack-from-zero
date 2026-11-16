@@ -29,7 +29,7 @@ pg = create_engine(PG_URL)
 for table in TABLES:
     df = pd.read_sql(f'SELECT * FROM {table}', pg)
     schema = [bigquery.SchemaField(name, kind) for name, kind in SCHEMAS[table]]
-    if table == 'fact_orders':
+    if table == 'fact_orders' and MODE == 'gcp':   # the emulator does not support partitions
         # partitioned by order date, clustered by status: queries on a month read only that month
         bq_table = bigquery.Table(f'{PROJECT}.{DATASET}.{table}', schema=schema)
         bq_table.time_partitioning = bigquery.TimePartitioning(field='order_date')

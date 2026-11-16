@@ -1,7 +1,10 @@
 import time
 from bq_config import DATASET, PROJECT, bq_client
 c = bq_client(); T = f'`{PROJECT}.{DATASET}`'
-for sql in [f"SELECT COUNT(*) n FROM {T}.fact_orders",
+print("start", flush=True)
+for sql in [f"SELECT COUNT(*) n FROM {T}.dim_country",
+            f"SELECT COUNT(*) n FROM {T}.dim_customer",
+            f"SELECT COUNT(*) n FROM {T}.fact_orders",
             f"SELECT status, COUNT(*) n FROM {T}.fact_orders GROUP BY status",
             f"SELECT COUNT(*) n FROM {T}.fact_orders WHERE order_date BETWEEN '2023-01-01' AND '2023-12-31'",
             f"SELECT c.country_name, COUNT(*) n FROM {T}.dim_customer cu JOIN {T}.dim_country c ON c.country_id = cu.country_id GROUP BY 1",
