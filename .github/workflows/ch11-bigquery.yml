@@ -22,10 +22,10 @@ jobs:
         run: |
           cd ch11-bigquery && bash start_emulator.sh
           sleep 8 && docker logs bq-emulator 2>&1 | tail -5
-          docker image inspect ghcr.io/goccy/bigquery-emulator:latest --format '{{json .Config.Labels}}'
-          docker exec bq-emulator /bin/bigquery-emulator --version || true
       - name: Load
         run: cd ch11-bigquery && python load_bigquery.py
+      - name: Probe
+        run: cd ch11-bigquery && timeout 900 python probe.py
       - name: Query
         run: cd ch11-bigquery && python query_bigquery.py
       - name: Exercises
