@@ -1,0 +1,29 @@
+name: Chapter 15 - Delta Lake
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch15-databricks/**', '.github/workflows/ch15-delta.yml']
+jobs:
+  delta:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21'}
+      - run: pip install -q -r requirements.txt
+      - name: Meridian, raw zone, cleaned zone
+        run: |
+          python data/generate_meridian.py > /dev/null
+          cd ch13-spark && python export_lake.py && python spark_clean.py 2>&1 | grep 'rows written'
+      - name: Delta Lake
+        run: cd ch15-databricks && python delta_local.py 2>&1 | grep -vE 'WARN|log4j|JAVA_TOOL|setLogLevel|FutureWarning|require_minimum|Ivy|::|resolving|found io|downloading|artifacts|confs|---|modules|retrieving|\[SUCCESSFUL|:: |^\s*$|loading settings|jars for|module|default'
+      - name: Exercises
+        run: cd ch15-databricks && python solutions/exercises.py 2>&1 | grep -vE 'WARN|log4j|JAVA_TOOL|setLogLevel|FutureWarning|require_minimum|Ivy|::|resolving|found io|downloading|artifacts|confs|---|modules|retrieving|SUCCESSFUL|^\s*$|loading settings|jars for|module|default'
