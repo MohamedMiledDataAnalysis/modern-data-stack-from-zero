@@ -65,8 +65,9 @@ with tab_sales:
     st.line_chart(daily)
 
     st.subheader('Revenue by category')
-    st.dataframe(done.groupby('category_name')['amount'].sum()
-                 .sort_values(ascending=False).round(2).rename('revenue'))
+    by_category = (done.groupby('category_name')['amount'].sum()
+                   .sort_values(ascending=False).round(2))
+    st.dataframe(by_category.rename('revenue'))
 
 with tab_churn:
     st.write('Probability that a customer stops buying, from the Chapter 21 model.')

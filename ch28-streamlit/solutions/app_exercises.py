@@ -65,8 +65,9 @@ with tab_sales:
     st.line_chart(daily)
 
     st.subheader('Revenue by category')
-    st.dataframe(done.groupby('category_name')['amount'].sum()
-                 .sort_values(ascending=False).round(2).rename('revenue'))
+    by_category = (done.groupby('category_name')['amount'].sum()
+                   .sort_values(ascending=False).round(2))
+    st.dataframe(by_category.rename('revenue'))
 
     # Exercise 1 — download the category table as CSV
     by_category = (done.groupby('category_name')['amount'].sum()
