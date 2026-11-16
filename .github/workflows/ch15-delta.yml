@@ -24,6 +24,10 @@ jobs:
           python data/generate_meridian.py > /dev/null
           cd ch13-spark && python export_lake.py && python spark_clean.py 2>&1 | grep 'rows written'
       - name: Delta Lake
-        run: cd ch15-databricks && python delta_local.py 2>&1 | grep -vE 'WARN|log4j|JAVA_TOOL|setLogLevel|FutureWarning|require_minimum|Ivy|::|resolving|found io|downloading|artifacts|confs|---|modules|retrieving|\[SUCCESSFUL|:: |^\s*$|loading settings|jars for|module|default'
+        run: |
+          cd ch15-databricks
+          python delta_local.py 2>&1 | grep -vE 'WARN|log4j|JAVA_TOOL|setLogLevel|FutureWarning|require_minimum|Ivy|resolving|found io|downloading|artifacts|confs|modules|retrieving|SUCCESSFUL|loading settings|jars for|^\s*$'
       - name: Exercises
-        run: cd ch15-databricks && python solutions/exercises.py 2>&1 | grep -vE 'WARN|log4j|JAVA_TOOL|setLogLevel|FutureWarning|require_minimum|Ivy|::|resolving|found io|downloading|artifacts|confs|---|modules|retrieving|SUCCESSFUL|^\s*$|loading settings|jars for|module|default'
+        run: |
+          cd ch15-databricks
+          python solutions/exercises.py 2>&1 | grep -vE 'WARN|log4j|JAVA_TOOL|setLogLevel|FutureWarning|require_minimum|Ivy|resolving|found io|downloading|artifacts|confs|modules|retrieving|SUCCESSFUL|loading settings|jars for|^\s*$'
