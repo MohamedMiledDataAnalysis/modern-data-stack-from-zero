@@ -20,3 +20,5 @@ out_*.html
 *.xlsx
 !ch02-files-apis-iot/supplier_prices.xlsx
 ch32-great-expectations/gx/
+output/
+state.json

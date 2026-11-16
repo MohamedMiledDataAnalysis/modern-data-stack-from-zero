@@ -31,6 +31,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch04-kafka/` | Chapter 4 — Apache Kafka |
 | `ch05-airbyte/` | Chapter 5 — Airbyte |
 | `ch06-fivetran/` | Chapter 6 — Fivetran |
+| `ch07-stitch/` | Chapter 7 — Stitch and Singer |
 | `ch08-s3/` | Chapter 8 — Amazon S3 |
 | `ch09-gcs/` | Chapter 9 — Google Cloud Storage |
 | `ch13-spark/` | Chapter 13 — Apache Spark |
