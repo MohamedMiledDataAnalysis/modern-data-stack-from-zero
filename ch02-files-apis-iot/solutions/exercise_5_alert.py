@@ -13,7 +13,8 @@ def on_connect(client, userdata, flags, reason_code, properties):
 def on_message(client, userdata, msg):
     r = json.loads(msg.payload)
     if r['temp_c'] > LIMIT_C:
-        print(f"ALERT cold-room seq={r['seq']} temp={r['temp_c']} at {r['ts']}")
+        print(f"ALERT cold-room seq={r['seq']} "
+              f"temp={r['temp_c']} at {r['ts']}")
         client.disconnect()
 
 

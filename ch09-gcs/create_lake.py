@@ -1,4 +1,4 @@
-"""Chapter 9, Steps 2-3 — create the bucket and fill the raw zone on Cloud Storage."""
+"""Chapter 9, Step 2 — create the bucket and fill the raw zone on Cloud Storage."""
 import io
 
 import pandas as pd

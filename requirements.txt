@@ -1,7 +1,8 @@
 # The Modern Data Stack, Second Edition
 # Versions tested with Python 3.13 in November 2026.
-# Chapters 10 (Snowflake), 16 (Beam), 26 (Superset) and 33 (Airflow) use their own
-# environment: see the requirements.txt file in those chapter folders.
+# Chapters 10 (Snowflake), 16 (Beam) and 33 (Airflow) use their own environment:
+# see the requirements.txt file in those chapter folders. Chapter 26 (Superset)
+# runs in its own Docker image.
 psycopg2-binary==2.9.13
 SQLAlchemy==2.1.8
 pymssql==2.4.6

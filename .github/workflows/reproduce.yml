@@ -2,7 +2,8 @@ name: Reproduce the book as a reader
 # A clean machine follows the book: create the database user, install requirements.txt
 # in a virtual environment, generate Meridian, then run every chapter's scripts and
 # corrections in book order. Chapters that need Docker (3, 4, 5, 9, 11, 26, 34, 35)
-# and R (19, 31) have their own workflows.
+# and R (19, 31) have their own workflows; Chapter 2's SQL Server runs in Docker below,
+# on the Linux job only.
 on:
   workflow_dispatch:
   push:
@@ -84,8 +85,13 @@ jobs:
           for i in $(seq 1 40); do python -c "import pymssql; pymssql.connect(server='localhost',user='sa',password='Meridian2026!').close()" 2>/dev/null && break; sleep 3; done
           python make_purchase_orders.py
           python read_sqlserver.py
-          python ../solutions/exercise_6_open_orders.py
+          docker logs sqlserver 2>&1 | grep "Recovery is complete" | tail -1
+          python ../solutions/exercise_6_open_orders.py | tee ex6.log
+          grep -qx 'Baltic Goods: 132 open purchase orders' ex6.log
+          grep -qx 'Northwind: 132 open purchase orders' ex6.log
+          grep -qx 'Alder & Co: 126 open purchase orders' ex6.log
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT status, COUNT(*) FROM purchase_orders GROUP BY status ORDER BY status;"
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT data_type, numeric_precision, numeric_scale FROM information_schema.columns WHERE table_name = 'purchase_orders' AND column_name = 'unit_cost';"
           docker rm -f sqlserver
       - name: Chapter 2 - MQTT sensors (Linux, Mosquitto)
         if: always() && runner.os == 'Linux'
@@ -134,6 +140,11 @@ jobs:
           cd modern-data-stack-from-zero/ch10-snowflake
           ~/meridian/$S/python -W ignore load_snowflake.py && ~/meridian/$S/python -W ignore query_snowflake.py && ~/meridian/$S/python -W ignore solutions/exercises.py
           cd ../sql-dialects && ~/meridian/$S/python -W ignore run_snowflake.py
+      - name: Chapter 11 - expected exercise answers (computed in PostgreSQL)
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch11-bigquery
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f check_exercises.sql
       - name: Chapter 12 - Fabric export and notebook on local Spark
         if: always()
         run: |

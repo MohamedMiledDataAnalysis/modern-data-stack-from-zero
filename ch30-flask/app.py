@@ -1,6 +1,6 @@
 """Chapter 30 — a small Meridian web application with Flask.
 
-Run from this folder:  flask --app app run --debug
+Run from this folder:  flask --app app run --debug --port 5001
 """
 from flask import Flask, abort, jsonify, render_template, request
 from sqlalchemy import create_engine, text

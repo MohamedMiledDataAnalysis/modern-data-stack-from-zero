@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 URL = ('postgresql+psycopg2://meridian_user:meridian2024'
        '@localhost:5432/meridian_db')
 engine = create_engine(URL)
-GOLD = 'C9A227'
+NAVY = '14213D'                 # gold would vanish on the colour scale's gold fill
 wb = load_workbook('meridian_report_2023.xlsx')
 
 # Exercise 1 — a category sheet with a bar chart
@@ -33,12 +33,12 @@ bars.legend = None
 ws3.add_chart(bars, 'D2')
 print('Exercise 1: top category', by_cat.iloc[0]['category'], round(by_cat.iloc[0]['revenue'], 2))
 
-# Exercise 2 — the best month of each country in bold gold
+# Exercise 2 — the best month of each country in bold navy
 ws = wb['Monthly']
 for col in 'BCDEFG':
     rng = f'{col}4:{col}15'
     ws.conditional_formatting.add(rng, FormulaRule(
-        formula=[f'{col}4=MAX(${col}$4:${col}$15)'], font=Font(bold=True, color=GOLD)))
+        formula=[f'{col}4=MAX(${col}$4:${col}$15)'], font=Font(bold=True, color=NAVY)))
 wb.save('meridian_report_2023_ex.xlsx')
 print('Exercise 2: saved meridian_report_2023_ex.xlsx')
 

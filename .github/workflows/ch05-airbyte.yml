@@ -25,10 +25,15 @@ jobs:
         run: python data/generate_meridian.py
       - name: Install abctl
         run: |
-          curl -LsfS https://get.airbyte.com | bash -
+          # The installer's request for the latest release sometimes fails for a moment;
+          # the book tells the reader to run the same line again (Chapter 5, Step 1).
+          for i in 1 2 3 4 5; do
+            curl -LsfS https://get.airbyte.com | bash - && break
+            echo "attempt $i failed; retrying in 20 s"; sleep 20
+          done
           abctl version
       - name: Install Airbyte locally (low-resource mode)
-        run: abctl local install --low-resource-mode 2>&1 | tail -25
+        run: abctl local install --low-resource-mode --chart-version 2.5.0 2>&1 | tail -25
       - name: Health
         run: |
           curl -s -o /dev/null -w "UI HTTP %{http_code}\n" http://localhost:8000/

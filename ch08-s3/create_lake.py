@@ -1,4 +1,4 @@
-"""Chapter 8, Steps 2-4 — create the bucket and fill the raw zone."""
+"""Chapter 8, Step 2 — create the bucket and fill the raw zone."""
 import io
 
 import pandas as pd
@@ -31,3 +31,4 @@ objects = s3.list_objects_v2(Bucket=BUCKET, Prefix='raw/orders/')
 print(f"{objects['KeyCount']} order files uploaded")
 print('first:', objects['Contents'][0]['Key'])
 print('last: ', objects['Contents'][-1]['Key'])
+print(sum(o['Size'] < 131072 for o in objects['Contents']), 'files under 128 KB')

@@ -1,6 +1,7 @@
 """Chapter 22 — regression and time series with statsmodels."""
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.dates as mdates                                 # noqa: E402
 import matplotlib.pyplot as plt                                   # noqa: E402
 import pandas as pd                                               # noqa: E402
 import statsmodels.formula.api as smf                             # noqa: E402
@@ -44,5 +45,7 @@ ax.plot(series.index, series.values, color='#14213D', label='actual')
 ax.plot(forecast.index, forecast.values, color='#C9A227', marker='o', label='forecast')
 ax.set_title('Completed revenue (£ million): last six months forecast')
 ax.legend(frameon=False)
+ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=[1, 7]))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
 fig.tight_layout()
 fig.savefig('forecast.png', dpi=200)

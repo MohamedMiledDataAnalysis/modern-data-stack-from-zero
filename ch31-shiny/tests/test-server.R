@@ -5,7 +5,7 @@ app <- shinyAppFile("app.R")
 testServer(app, {
   session$setInputs(month = "2023-09", countries = character(0))
   stopifnot(output$n_orders == "4,161")
-  cat("September 2023:", output$n_orders, "orders,", output$revenue, ",",
+  cat("September 2023:", output$n_orders, "orders,", paste0(output$revenue, ","),
       output$return_rate, "returned\n")
 
   session$setInputs(month = "2023-02", countries = "France")

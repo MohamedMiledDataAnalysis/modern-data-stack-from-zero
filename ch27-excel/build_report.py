@@ -46,7 +46,8 @@ total_row = 4 + len(pivot)
 ws.cell(row=total_row, column=1, value='Total').font = Font(bold=True)
 for col in range(2, len(headers) + 1):
     letter = get_column_letter(col)
-    c = ws.cell(row=total_row, column=col, value=f'=SUM({letter}4:{letter}{total_row - 1})')
+    c = ws.cell(row=total_row, column=col,
+                value=f'=SUM({letter}4:{letter}{total_row - 1})')
     c.font = Font(bold=True)
 
 # Formats, widths, frozen header, colour scale

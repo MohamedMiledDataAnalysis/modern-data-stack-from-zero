@@ -4,15 +4,19 @@ The platform connects with the read-only login meridian_reader: it can read the
 purchasing database but cannot change it.
 """
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import Numeric, create_engine, text
 
-SQLSERVER = 'mssql+pymssql://meridian_reader:Reader2026!@localhost:1433/meridian_erp'
-POSTGRES = 'postgresql+psycopg2://meridian_user:meridian2024@localhost:5432/meridian_db'
+SQLSERVER = ('mssql+pymssql://meridian_reader:Reader2026!'
+             '@localhost:1433/meridian_erp')
+POSTGRES = ('postgresql+psycopg2://meridian_user:meridian2024'
+            '@localhost:5432/meridian_db')
 
 source = create_engine(SQLSERVER)
 with source.connect() as conn:
     print(conn.execute(text('SELECT @@VERSION')).scalar().splitlines()[0])
-    orders = pd.read_sql(text('SELECT * FROM dbo.purchase_orders ORDER BY po_id'), conn)
+    orders = pd.read_sql(
+        text('SELECT * FROM dbo.purchase_orders ORDER BY po_id'),
+        conn)
 
 print(orders.shape)
 print(orders.groupby('status').size().to_string())
@@ -21,5 +25,8 @@ received = orders[orders['status'] == 'received'].copy()
 received['cost'] = received['quantity'] * received['unit_cost'].astype(float)
 print(received.groupby('supplier')['cost'].sum().round(2).to_string())
 
-orders.to_sql('purchase_orders', create_engine(POSTGRES), if_exists='replace', index=False)
+# dtype= keeps unit_cost as an exact NUMERIC(8,2) in PostgreSQL, as money must be
+orders.to_sql('purchase_orders', create_engine(POSTGRES),
+              if_exists='replace', index=False,
+              dtype={'unit_cost': Numeric(8, 2)})
 print(f'{len(orders)} rows written to purchase_orders in PostgreSQL')

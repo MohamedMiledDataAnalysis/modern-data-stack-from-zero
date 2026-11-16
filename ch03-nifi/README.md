@@ -42,6 +42,13 @@
 
 `<host>` is `host.docker.internal` on macOS, and the first value of `hostname -I` on Ubuntu and WSL.
 
+Write to a new table, so that Chapter 2's `supplier_stock` keeps its 500 rows. Create it first, as `meridian_user`:
+
+```sql
+CREATE TABLE supplier_stock_nifi (product_id INTEGER, supplier TEXT,
+  stock_qty INTEGER, reorder_level INTEGER, updated DATE);
+```
+
 | Processor / service | Property | Value |
 |:--|:--|:--|
 | DBCPConnectionPool | Database Connection URL | `jdbc:postgresql://<host>:5432/meridian_db` |
@@ -52,7 +59,7 @@
 | PutDatabaseRecord | Record Reader | `JsonTreeReader` |
 | PutDatabaseRecord | Database Type / Statement Type | `PostgreSQL` / `INSERT` |
 | PutDatabaseRecord | Database Connection Pooling Service | `DBCPConnectionPool` |
-| PutDatabaseRecord | Table Name | `supplier_stock` |
+| PutDatabaseRecord | Table Name | `supplier_stock_nifi` |
 
 ## Permissions
 

@@ -15,7 +15,8 @@ def on_connect(client, userdata, flags, reason_code, properties):
 def on_message(client, userdata, msg):
     reading = json.loads(msg.payload)
     received.append(reading)
-    print(f"{msg.topic:<32} seq={reading['seq']} temp={reading['temp_c']}")
+    print(f"{msg.topic:<32} seq={reading['seq']} "
+          f"temp={reading['temp_c']}")
     if len(received) == MAX_MESSAGES:
         client.disconnect()
 

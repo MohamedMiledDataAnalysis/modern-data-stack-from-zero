@@ -14,14 +14,14 @@ system Windows readers use through WSL) and on a clean macOS 15 machine (Apple S
 installs Python 3.13, Java 21 and PostgreSQL 16, creates the database user with Chapter 1's
 script, creates the virtual environment, runs `pip install -r requirements.txt`, generates
 Meridian, then runs every chapter's scripts and corrections in book order, including the
-separate environments of Chapters 10, 16 and 33. Chapters that need Docker (3, 4, 5, 9, 11,
+separate environments of Chapters 10, 16 and 33. Chapters that need Docker (2's SQL Server, 3, 4, 5, 9, 11,
 12's SQL Server, 26, 34, 35) or R (19, 31) run in their own workflows, on Ubuntu.
 
 ## Chapter by chapter
 
 | Ch | Tool | Executed | Where | Not executed |
 |---:|:--|:--|:--|:--|
-| 0 | Setup | `check_setup.py` | Local, `reproduce.yml` | Installers on Windows and macOS |
+| 0 | Setup | `check_setup.py` | Local, `reproduce.yml` | Installers on Windows and macOS; the Ubuntu install commands were run locally only (`reproduce.yml` installs Python and Java with `setup-python` and `setup-java`) |
 | 1 | PostgreSQL | all queries, exercises | Local, `reproduce.yml` | — |
 | Interlude | SQL dialects | the five queries in `sql-dialects/` | PostgreSQL 16 and Spark SQL: Local, `reproduce.yml`; Snowflake SQL on fakesnow: Local, `reproduce.yml`; T-SQL on SQL Server 2022: `ch12-tsql.yml`; GoogleSQL on the BigQuery emulator: `ch11-bigquery.yml` | query 4 on the BigQuery emulator returns 0 for the running total, an emulator fault; the other 24 results match |
 | 2 | Files, APIs, IoT, SQL Server 2022 | all scripts, mock API, MQTT simulator; SQL Server source (`sqlserver/`) and Exercise 6 | Local, `reproduce.yml` (SQL Server and MQTT on the Ubuntu runner) | SQL Server on macOS was not run: GitHub's macOS runner has no Docker |
@@ -33,8 +33,8 @@ separate environments of Chapters 10, 16 and 33. Chapters that need Docker (3, 4
 | 8 | Amazon S3 | all scripts against moto | Local, `reproduce.yml` | real AWS account |
 | 9 | Cloud Storage | all scripts against fake-gcs-server 1.52 | `ch09-gcs.yml` | lifecycle rules and location on real Google Cloud |
 | 10 | Snowflake | load, queries, clone, exercises 1–2 against fakesnow 0.12.1, in the chapter's own environment | Local, `reproduce.yml` | Time Travel, resource monitor, Exercise 3, real account |
-| 11 | BigQuery | load and Step 3–4 query against bigquery-emulator 0.8.1, first quarter of 2023 | `ch11-bigquery.yml` | exercise GoogleSQL (answers from `check_exercises.sql` in PostgreSQL); real sandbox |
-| 12 | Microsoft Fabric | Parquet export; notebook code on local Spark; all T-SQL on SQL Server 2022 | Local, `ch12-tsql.yml`, `reproduce.yml` | everything inside Fabric |
+| 11 | BigQuery | load and Step 3–4 query against bigquery-emulator 0.8.1, first quarter of 2023 | `ch11-bigquery.yml`; exercise answers from `check_exercises.sql` in PostgreSQL in `reproduce.yml` | the exercise queries in GoogleSQL on the emulator; real sandbox |
+| 12 | Microsoft Fabric | Parquet export; notebook code on local Spark; all T-SQL on SQL Server 2022 | Local, `ch12-tsql.yml`, `reproduce.yml` | everything inside Fabric; Chapter 12 reusing Chapter 2's `sqlserver` container (`ch12-tsql.yml` uses its own service container) |
 | 13 | Spark 4.2.0 | all scripts, exercises | Local, `reproduce.yml` | — |
 | 14 | dbt 1.12.7 | models, tests, exercises | Local, `reproduce.yml` | — |
 | 15 | Delta Lake 4.4.1 | Part A, exercises; `export_for_databricks.py` | `ch15-delta.yml`, `reproduce.yml` | Part B on Databricks Free Edition |

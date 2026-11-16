@@ -3,6 +3,7 @@ from pathlib import Path
 
 import matplotlib
 matplotlib.use('Agg')                       # draw to files, no window needed
+import matplotlib.dates as mdates           # noqa: E402
 import matplotlib.pyplot as plt             # noqa: E402
 import pandas as pd                         # noqa: E402
 from scipy import stats                     # noqa: E402
@@ -31,6 +32,8 @@ fig, ax = plt.subplots(figsize=(7, 3))
 ax.plot(monthly.index, monthly.values, color='#14213D')
 ax.set_title('Meridian completed revenue per month (£ million)')
 ax.set_ylim(2.5, 3.3)
+ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=[1, 7]))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
 fig.tight_layout()
 fig.savefig('monthly_revenue.png', dpi=200)
 print('lowest month:', monthly.idxmin().strftime('%Y-%m'), round(monthly.min(), 3))

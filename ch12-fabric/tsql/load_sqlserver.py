@@ -1,5 +1,6 @@
 """Optional: loads the Parquet files of ./upload into a local SQL Server, to practise the T-SQL
-of Chapter 12 without a Fabric account. Start SQL Server first (see the README)."""
+of Chapter 12 without a Fabric account. Start the sqlserver container of Chapter 2, Step 8 first
+(docker start sqlserver; see the README), and run export_parquet.py from ch12-fabric/."""
 import pandas as pd
 import pyarrow.parquet as pq
 from sqlalchemy import DECIMAL, Date, Integer, String, create_engine, text

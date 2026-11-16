@@ -1,4 +1,4 @@
-"""Chapter 9, Step 4 — read one month back from Cloud Storage."""
+"""Chapter 9, Step 3 — read one month back from Cloud Storage."""
 import io
 
 import pandas as pd

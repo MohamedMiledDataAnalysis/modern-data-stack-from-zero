@@ -9,7 +9,7 @@ ORDER BY order_id;
 SELECT order_id FROM meridian_public.fact_orders WHERE _fivetran_deleted;
 
 -- 3. History mode: every version of customer 7
-SELECT customer_id, country_id, _fivetran_start, _fivetran_end, _fivetran_active
+SELECT country_id, _fivetran_start, _fivetran_end, _fivetran_active AS active
 FROM meridian_public.dim_customer
 WHERE customer_id = 7
 ORDER BY _fivetran_start;

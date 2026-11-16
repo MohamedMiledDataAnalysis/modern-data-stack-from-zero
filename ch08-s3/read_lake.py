@@ -1,4 +1,4 @@
-"""Chapter 8, Step 5 — read one month back from the lake."""
+"""Chapter 8, Step 4 — read one month back from the lake."""
 import io
 
 import pandas as pd

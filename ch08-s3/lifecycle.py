@@ -1,4 +1,4 @@
-"""Chapter 8, Step 6 — protect and age the lake: versioning, encryption, lifecycle."""
+"""Chapter 8, Step 5 — protect and age the lake: versioning, encryption, lifecycle."""
 from lake_config import BUCKET, s3_client
 
 s3 = s3_client()

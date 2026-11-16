@@ -51,8 +51,9 @@ p <- ggplot(by_country, aes(x = reorder(country_name, revenue), y = revenue / 1e
   geom_col(fill = "#14213D") +
   coord_flip() +
   labs(x = NULL, y = "Completed revenue (£ million)",
-       title = "Meridian revenue by country, 2021-2024") +
-  theme_minimal(base_size = 11)
+       title = "Meridian completed revenue by country, Jan 2021 to 1 Jan 2024") +
+  theme_minimal(base_size = 11) +
+  theme(plot.title.position = "plot")
 ggsave("revenue_by_country.png", p, width = 6, height = 3, dpi = 200)
 
 # Step 5 — Welch t-test, Spain against the UK

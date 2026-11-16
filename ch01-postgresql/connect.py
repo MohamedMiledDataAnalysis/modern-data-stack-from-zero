@@ -7,9 +7,11 @@ URL = ('postgresql+psycopg2://meridian_user:meridian2024'
 engine = create_engine(URL)
 
 with engine.connect() as conn:
-    n = conn.execute(text('SELECT COUNT(*) FROM fact_orders')).scalar()
+    n = conn.execute(
+        text('SELECT COUNT(*) FROM fact_orders')).scalar()
 print(f'fact_orders holds {n:,} rows')
 
-df = pd.read_sql('SELECT status, COUNT(*) AS orders FROM fact_orders '
-                 'GROUP BY status ORDER BY orders DESC', engine)
+df = pd.read_sql('SELECT status, COUNT(*) AS orders '
+                 'FROM fact_orders GROUP BY status '
+                 'ORDER BY orders DESC', engine)
 print(df)

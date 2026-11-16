@@ -10,13 +10,15 @@ def get_with_retry(url, headers, attempts=3, wait=1.0):
             resp = requests.get(url, headers=headers, timeout=10)
             if resp.status_code < 500:
                 return resp
-            print(f'attempt {attempt}: server error {resp.status_code}')
+            print(f'attempt {attempt}: '
+                  f'server error {resp.status_code}')
         except requests.ConnectionError:
             print(f'attempt {attempt}: cannot connect')
         if attempt < attempts:
             time.sleep(wait)
             wait *= 2
-    raise RuntimeError(f'{url} failed after {attempts} attempts')
+    raise RuntimeError(
+        f'{url} failed after {attempts} attempts')
 
 
 if __name__ == '__main__':

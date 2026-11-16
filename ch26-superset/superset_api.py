@@ -13,7 +13,8 @@ PG_HOST = os.environ.get('MERIDIAN_PG_HOST', 'host.docker.internal')
 s = session()
 
 # 1. The database connection
-uri = f'postgresql://meridian_user:meridian2024@{PG_HOST}:5432/meridian_db'
+uri = ('postgresql://meridian_user:meridian2024'
+       f'@{PG_HOST}:5432/meridian_db')
 db_id = find(s, 'database', 'database_name', 'Meridian')
 if db_id is None:
     r = s.post(f'{BASE}/api/v1/database/', json={
