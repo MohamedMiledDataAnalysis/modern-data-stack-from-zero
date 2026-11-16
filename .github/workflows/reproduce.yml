@@ -219,5 +219,7 @@ jobs:
         if: always()
         run: |
           cd ~/meridian/modern-data-stack-from-zero/ch34-prometheus
-          (python meridian_exporter.py > exporter.log 2>&1 &) ; sleep 8
-          curl -s localhost:8001/metrics | grep "^meridian_" | sed -n '1,8p'
+          (python meridian_exporter.py > exporter.log 2>&1 &)
+          for i in $(seq 1 20); do curl -sf localhost:8001/metrics > metrics.txt && grep -q "^meridian_orders" metrics.txt && break; sleep 2; done
+          echo "answered after about $((i*2)) s"; cat exporter.log
+          grep "^meridian_" metrics.txt | sed -n '1,8p'
