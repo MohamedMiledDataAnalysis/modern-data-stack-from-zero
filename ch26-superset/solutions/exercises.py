@@ -47,7 +47,7 @@ r.raise_for_status()
 for row in r.json()['result'][0]['data']:
     print(f"{row['country_name']:<12}{row['revenue']:>14,.2f}")
 
-print('Exercise 3 - a dashboard holding the chart of Step 6')
+print('Exercise 3 - a dashboard holding the chart of Step 5')
 chart_id = find(s, 'chart', 'slice_name', 'Completed revenue per year')
 dash_id = find(s, 'dashboard', 'dashboard_title', 'Meridian overview')
 if dash_id is None:

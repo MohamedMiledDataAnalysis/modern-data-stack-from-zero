@@ -15,7 +15,7 @@ bucket.blob('raw/supplier_stock/2026-09-22/supplier_stock.csv').upload_from_file
 
 URL = ('postgresql+psycopg2://meridian_user:meridian2024'
        '@localhost:5432/meridian_db')
-orders = pd.read_sql('SELECT * FROM fact_orders', create_engine(URL),
+orders = pd.read_sql('SELECT * FROM fact_orders ORDER BY order_id', create_engine(URL),
                      parse_dates=['order_date'])
 for (year, month), part in orders.groupby([orders.order_date.dt.year,
                                            orders.order_date.dt.month]):

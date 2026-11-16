@@ -9,6 +9,7 @@ pip install "apache-airflow==3.4.0" psycopg2-binary==2.9.13 \
 export AIRFLOW_HOME=~/meridian/airflow
 export AIRFLOW__CORE__DAGS_FOLDER=~/meridian/modern-data-stack-from-zero/ch33-airflow/dags
 export AIRFLOW__CORE__LOAD_EXAMPLES=False
+airflow db migrate          # once; airflow standalone also does it
 airflow dags test meridian_nightly
 ```
 

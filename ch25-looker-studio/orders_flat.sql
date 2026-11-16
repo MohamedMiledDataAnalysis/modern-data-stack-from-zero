@@ -1,4 +1,4 @@
--- One flat table for Looker Studio: each order with its country and category.
+-- One flat table for Data Studio (formerly Looker Studio): each order with its country and category.
 -- In BigQuery (Step 2) replace the table names by `meridian-2026.meridian.<table>`.
 SELECT o.order_id, o.order_date, o.status, o.quantity, o.total_amount,
        o.customer_id, c.country_name, cat.category_name

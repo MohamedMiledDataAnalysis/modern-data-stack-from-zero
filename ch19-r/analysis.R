@@ -13,7 +13,8 @@ orders <- dbGetQuery(con, "
          o.total_amount::float AS total_amount, o.status, co.country_name
   FROM fact_orders o
   JOIN dim_customer c  ON o.customer_id = c.customer_id
-  JOIN dim_country co ON c.country_id  = co.country_id")
+  JOIN dim_country co ON c.country_id  = co.country_id
+  ORDER BY o.order_id")
 dbDisconnect(con)
 str(orders)
 

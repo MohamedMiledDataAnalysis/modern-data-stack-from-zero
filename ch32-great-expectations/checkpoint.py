@@ -1,4 +1,4 @@
-"""Chapter 32, Step 5 — a checkpoint that validates and publishes Data Docs."""
+"""Chapter 32, Step 4 — a checkpoint that validates and publishes Data Docs."""
 import great_expectations as gx
 
 context = gx.get_context(mode='file', project_root_dir='.')

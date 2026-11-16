@@ -1,7 +1,6 @@
-"""Chapter 21, Steps 2-6 — train, evaluate, tune and save a churn model."""
+"""Chapter 21, Steps 3-6 — train, evaluate, tune and save a churn model."""
 import joblib
 import pandas as pd
-from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, roc_auc_score
@@ -17,7 +16,7 @@ FEATURES = ['sessions_90d', 'support_tickets_90d', 'days_since_login',
             'newsletter_opt_in', 'uses_app']
 X, y = df[FEATURES].astype(float), df['churned']
 
-# Step 2 — split once, keep the test set aside
+# Step 3 — split once, keep the test set aside
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42, stratify=y)
 print(len(X_train), 'training rows,', len(X_test), 'test rows')

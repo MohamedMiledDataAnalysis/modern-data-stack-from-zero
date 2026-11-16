@@ -27,4 +27,13 @@
 | ValidateRecord | valid | Write landed |
 | ValidateRecord | invalid, failure | Write quarantine |
 | both PutFile | success | terminate |
-| both PutFile | failure | retry |
+| both PutFile | failure | the same PutFile (a loop back onto itself) |
+
+## Exercise 4 (QueryRecord)
+
+| Processor / service | Property | Value |
+|:--|:--|:--|
+| QueryRecord | Record Reader / Writer | `JsonTreeReader` / `JsonRecordSetWriter` |
+| QueryRecord | accepted | `SELECT * FROM FLOWFILE WHERE stock_qty >= 0` → Write landed |
+| QueryRecord | negative | `SELECT * FROM FLOWFILE WHERE stock_qty < 0` → Write quarantine |
+| QueryRecord | failure / original | Write quarantine / terminate |

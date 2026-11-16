@@ -18,7 +18,7 @@ out = Path('upload')
 out.mkdir(exist_ok=True)
 pg = create_engine(PG_URL)
 for table in TABLES:
-    df = pd.read_sql(f'SELECT * FROM {table}', pg)
+    df = pd.read_sql(f'SELECT * FROM {table} ORDER BY 1', pg)
     fields = []
     for col in df.columns:
         if col in MONEY:

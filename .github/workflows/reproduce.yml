@@ -13,7 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15, windows-2025]
+        # Windows readers follow the book in WSL (Ubuntu 24.04): the ubuntu job is their path.
+        os: [ubuntu-24.04, macos-15]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -82,7 +83,7 @@ jobs:
           cd ~/meridian/modern-data-stack-from-zero/ch06-fivetran
           export PGPASSWORD=meridian2024
           psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f simulate_destination.sql
-          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f queries.sql | head -20
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f queries.sql | sed -n '1,20p'
           python solutions/mar_estimate.py
       - name: Chapter 7 - Singer tap and target
         if: always()
@@ -136,6 +137,7 @@ jobs:
           cd ~/meridian/modern-data-stack-from-zero/ch15-databricks
           python delta_local.py 2>/dev/null | grep -vE "^(found|downloading|\s|::)" | tail -25
           python solutions/exercises.py 2>/dev/null | grep -vE "^(found|downloading|\s|::)" | tail -15
+          python export_for_databricks.py
       - name: Chapter 16 - Beam (its own environment)
         if: always()
         run: |
@@ -171,14 +173,14 @@ jobs:
         run: cd ~/meridian/modern-data-stack-from-zero/ch22-statsmodels && MPLBACKEND=Agg python model.py | tail -10 && MPLBACKEND=Agg python solutions/exercises.py | tail -10
       - name: Chapter 23 - Tableau Hyper extract
         if: always()
-        run: cd ~/meridian/modern-data-stack-from-zero/ch23-tableau && python build_extract.py && python solutions/check_figures.py | head -9
+        run: cd ~/meridian/modern-data-stack-from-zero/ch23-tableau && python build_extract.py && python solutions/check_figures.py | sed -n '1,9p'
       - name: Chapters 24 and 25 - expected BI figures
         if: always()
         run: |
           export PGPASSWORD=meridian2024
           cd ~/meridian/modern-data-stack-from-zero
-          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f ch24-power-bi/check_figures.sql | head -8
-          cd ch25-looker-studio && python export_csv.py | head -1
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f ch24-power-bi/check_figures.sql | sed -n '1,8p'
+          cd ch25-looker-studio && python export_csv.py | sed -n '1,1p'
           psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f check_figures.sql | tail -3
       - name: Chapter 27 - Excel report
         if: always()
@@ -199,8 +201,8 @@ jobs:
           python checkpoint.py | tail -6
           python quality_gate.py; echo "quality gate exit code: $?"
           python solutions/exercises.py | tail -10
-      - name: Chapter 33 - Airflow (Linux and macOS; Windows readers use WSL)
-        if: always() && runner.os != 'Windows'
+      - name: Chapter 33 - Airflow
+        if: always()
         run: |
           cd ~/meridian
           python -m venv airflow-venv
@@ -218,4 +220,4 @@ jobs:
         run: |
           cd ~/meridian/modern-data-stack-from-zero/ch34-prometheus
           (python meridian_exporter.py > exporter.log 2>&1 &) ; sleep 8
-          curl -s localhost:8001/metrics | grep "^meridian_" | head -8
+          curl -s localhost:8001/metrics | grep "^meridian_" | sed -n '1,8p'

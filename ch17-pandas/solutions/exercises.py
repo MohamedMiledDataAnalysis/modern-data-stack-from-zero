@@ -17,11 +17,17 @@ print(orders.query("status == 'completed'")
       .round(2).sort_values(ascending=False).head(3))
 
 print('Exercise 2')
+# the `monthly` table of Step 3: completed revenue per category and month of 2023
 monthly = (orders.query("status == 'completed'")
+           .merge(products[['product_id', 'category_id']], on='product_id', how='left')
+           .merge(categories, on='category_id', how='left')
            .assign(month=lambda d: pd.to_datetime(d['order_date']).dt.to_period('M'))
            .loc[lambda d: d['month'].dt.year == 2023]
-           .groupby('month')['total_amount'].sum().astype(float))
-print(monthly.sort_values(ascending=False).head(1))
+           .groupby(['category_name', 'month'], as_index=False)
+           .agg(orders=('order_id', 'count'), revenue=('total_amount', 'sum')))
+best = (monthly.groupby('month')['revenue'].sum()
+        .astype(float).sort_values(ascending=False).head(1))
+print(best)
 
 print('Exercise 3')
 bad = pd.concat([products, products.head(1)])

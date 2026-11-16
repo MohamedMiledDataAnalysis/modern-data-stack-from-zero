@@ -23,7 +23,8 @@ def collect():
             for t in TABLES:
                 cur.execute(f'SELECT COUNT(*) FROM {t}')
                 rows.labels(table=t).set(cur.fetchone()[0])
-            cur.execute('SELECT status, COUNT(*) FROM fact_orders GROUP BY status')
+            cur.execute('SELECT status, COUNT(*) FROM fact_orders '
+                        'GROUP BY status ORDER BY status')
             for status, n in cur.fetchall():
                 orders.labels(status=status).set(n)
             cur.execute('SELECT EXTRACT(EPOCH FROM MAX(order_date)::timestamp) FROM fact_orders')

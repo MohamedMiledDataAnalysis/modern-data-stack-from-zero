@@ -1,4 +1,4 @@
--- The figures each Looker Studio chart of Chapter 25 must show, computed in PostgreSQL
+-- The figures each Data Studio (formerly Looker Studio) chart of Chapter 25 must show, computed in PostgreSQL
 -- on the same flat table.
 WITH f AS (
     SELECT o.order_id, o.order_date, o.status, o.total_amount, o.customer_id,

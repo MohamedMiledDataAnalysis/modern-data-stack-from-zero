@@ -15,7 +15,7 @@ pyarrow==26.0.1
 matplotlib==3.11.2
 boto3==1.44.3
 google-cloud-storage==3.17.1
-tableauhyperapi==0.0.26963
+tableauhyperapi==0.0.26225
 moto[s3,server]==5.2.5
 google-cloud-bigquery==3.47.0
 db-dtypes==1.9.0

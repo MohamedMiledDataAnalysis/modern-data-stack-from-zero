@@ -1,4 +1,4 @@
-"""Chapter 16, Step 5 — the same code on a stream: revenue per one-minute window.
+"""Chapter 16, Step 4 — windows on a stream: revenue per one-minute window.
 
 TestStream replays events with their own timestamps, so the result is the same at
 every run. On a real stream (Kafka, Pub/Sub) only the first step changes.

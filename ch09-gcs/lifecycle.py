@@ -5,7 +5,7 @@ from lake_config import BUCKET, MODE, gcs_client
 
 if MODE != 'gcp':
     sys.exit('The emulator does not support bucket settings. '
-             'Run this step on Google Cloud (Step 6).')
+             'Run this step on Google Cloud (Step 4).')
 
 bucket = gcs_client().get_bucket(BUCKET)
 bucket.versioning_enabled = True

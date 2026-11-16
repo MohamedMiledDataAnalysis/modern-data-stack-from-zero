@@ -6,7 +6,7 @@ Date =
 ADDCOLUMNS (
     CALENDAR ( DATE ( 2021, 1, 1 ), DATE ( 2024, 12, 31 ) ),
     "Year", YEAR ( [Date] ),
-    "Quarter", QUARTER ( [Date] ),
+    "Quarter", "Q" & QUARTER ( [Date] ),
     "Month", FORMAT ( [Date], "mmm" ),
     "Month number", MONTH ( [Date] )
 )

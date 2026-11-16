@@ -1,0 +1,2 @@
+{"type": "SCHEMA", "stream": "fact_orders", "schema": {"properties": {"order_id": {}, "status": {}}}, "key_properties": ["order_id"]}
+{"type": "RECORD", "stream": "fact_orders", "record": {"order_id": 1}}

@@ -18,7 +18,7 @@ s3.upload_file('../ch02-files-apis-iot/supplier_stock.csv', BUCKET,
 # 2. the orders, one Parquet file per month
 URL = ('postgresql+psycopg2://meridian_user:meridian2024'
        '@localhost:5432/meridian_db')
-orders = pd.read_sql('SELECT * FROM fact_orders', create_engine(URL),
+orders = pd.read_sql('SELECT * FROM fact_orders ORDER BY order_id', create_engine(URL),
                      parse_dates=['order_date'])
 for (year, month), part in orders.groupby([orders.order_date.dt.year,
                                            orders.order_date.dt.month]):

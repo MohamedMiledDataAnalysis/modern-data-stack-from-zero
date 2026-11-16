@@ -3,7 +3,6 @@ import pandas as pd
 
 df = pd.read_csv('supplier_stock.csv')
 print(df.dtypes)
-print(df.tail(3))
 
 df['stock_qty'] = pd.to_numeric(df['stock_qty'], errors='coerce')
 df['updated'] = pd.to_datetime(df['updated'], format='%Y-%m-%d', errors='coerce')

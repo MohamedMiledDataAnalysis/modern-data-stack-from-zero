@@ -2,6 +2,10 @@
 
 The Modern Data Stack, Second Edition, Chapter 1.
 Seed 42 with Faker 40.54.0 gives every reader identical data.
+
+Running it again rebuilds the five tables from scratch. The DROP ... CASCADE also removes
+anything later chapters built on them, such as dbt views (Chapter 14): rerun those chapters'
+steps afterwards.
 """
 import random
 from datetime import date, timedelta

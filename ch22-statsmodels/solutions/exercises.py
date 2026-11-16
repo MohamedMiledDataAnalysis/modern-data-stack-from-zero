@@ -11,7 +11,7 @@ print('\nExercise 1')
 train_df, test_df = monthly.iloc[:-6], monthly.iloc[-6:]
 days_model = smf.ols('revenue_m ~ days', data=train_df).fit()
 pred = days_model.predict(test_df)
-print(f'MAE days model {(pred.values - test.values).__abs__().mean():.3f}')
+print(f'MAE days model {abs(pred.values - test.values).mean():.3f}')
 
 print('\nExercise 2')
 m = monthly.assign(per_day=monthly['revenue_m'] / monthly['days'] * 1e3,
