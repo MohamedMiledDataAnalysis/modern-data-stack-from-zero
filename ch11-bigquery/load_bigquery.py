@@ -1,11 +1,10 @@
 """Creates the dataset and loads the five Meridian tables from PostgreSQL."""
 import io
+import os
 
 import pandas as pd
 from google.cloud import bigquery
 from sqlalchemy import create_engine
-
-import os
 
 from bq_config import DATASET, LOCATION, MODE, PG_URL, PROJECT, TABLES, bq_client
 
