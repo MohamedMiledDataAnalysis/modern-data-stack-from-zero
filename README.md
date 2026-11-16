@@ -64,3 +64,5 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 ## How to use this repository
 
 Type the code yourself first, from the book. Come here to compare your files with the reference, or when you are stuck. Copying files you have not typed teaches you much less.
+
+See [TESTING.md](TESTING.md) for how each chapter was tested and which steps were written from documentation.
