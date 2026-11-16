@@ -38,6 +38,8 @@ jobs:
           q 'meridian_orders'
           q 'sum(meridian_orders)'
           q 'meridian_orders{status="returned"} / ignoring(status) sum(meridian_orders)'
+          q 'sum(meridian_orders{status="returned"}) / sum(meridian_orders)'
+          q 'meridian_orders{status="returned"} / ignoring(status) group_left sum without (status) (meridian_orders)'
           q 'round((time() - meridian_latest_order_timestamp_seconds) / 86400)'
           q 'sum by (job) (up)'
       - name: Alerts
