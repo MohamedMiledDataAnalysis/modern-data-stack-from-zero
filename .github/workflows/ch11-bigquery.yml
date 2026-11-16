@@ -2,7 +2,7 @@ name: Chapter 11 - BigQuery (emulator)
 on:
   workflow_dispatch:
   push:
-    paths: ['ch11-bigquery/**', '.github/workflows/ch11-bigquery.yml']
+    paths: ['ch11-bigquery/**', 'sql-dialects/**', '.github/workflows/ch11-bigquery.yml']
 jobs:
   bigquery:
     runs-on: ubuntu-24.04
@@ -26,3 +26,18 @@ jobs:
         run: cd ch11-bigquery && python load_bigquery.py
       - name: Query
         run: cd ch11-bigquery && date && timeout 600 python -u query_bigquery.py && date
+      - name: SQL dialects - GoogleSQL query 1
+        if: always()
+        run: cd sql-dialects && timeout 240 python -u run_bigquery.py 1
+      - name: SQL dialects - GoogleSQL query 2
+        if: always()
+        run: cd sql-dialects && timeout 240 python -u run_bigquery.py 2
+      - name: SQL dialects - GoogleSQL query 3
+        if: always()
+        run: cd sql-dialects && timeout 240 python -u run_bigquery.py 3
+      - name: SQL dialects - GoogleSQL query 4
+        if: always()
+        run: cd sql-dialects && timeout 240 python -u run_bigquery.py 4
+      - name: SQL dialects - GoogleSQL query 5
+        if: always()
+        run: cd sql-dialects && timeout 240 python -u run_bigquery.py 5

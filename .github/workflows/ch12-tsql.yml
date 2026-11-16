@@ -2,7 +2,7 @@ name: Chapter 12 - Fabric T-SQL on SQL Server
 on:
   workflow_dispatch:
   push:
-    paths: ['ch12-fabric/**', '.github/workflows/ch12-tsql.yml']
+    paths: ['ch12-fabric/**', 'sql-dialects/**', '.github/workflows/ch12-tsql.yml']
 jobs:
   tsql:
     runs-on: ubuntu-24.04
@@ -34,3 +34,6 @@ jobs:
         run: cd ch12-fabric && python tsql/run_sql.py tsql/queries.sql
       - name: Exercises
         run: cd ch12-fabric && python tsql/run_sql.py solutions/exercises.sql
+      - name: SQL dialects - T-SQL
+        if: always()
+        run: cd ch12-fabric && python tsql/run_sql.py ../sql-dialects/tsql.sql

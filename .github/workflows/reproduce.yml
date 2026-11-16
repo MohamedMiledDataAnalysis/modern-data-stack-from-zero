@@ -56,6 +56,12 @@ jobs:
           for f in ch01-postgresql/01_queries.sql ch01-postgresql/solutions/*.sql; do
             echo "== $f"; psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f "$f" | tail -4; done
 
+      - name: SQL dialects - PostgreSQL and Spark SQL
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/sql-dialects
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f postgresql.sql
+          python -W ignore run_spark.py 2>/dev/null
       - name: Chapter 2 - files, API, load
         if: always()
         run: |
@@ -108,6 +114,7 @@ jobs:
           $S/python -m pip install -q -r modern-data-stack-from-zero/ch10-snowflake/requirements.txt
           cd modern-data-stack-from-zero/ch10-snowflake
           ~/meridian/$S/python -W ignore load_snowflake.py && ~/meridian/$S/python -W ignore query_snowflake.py && ~/meridian/$S/python -W ignore solutions/exercises.py
+          cd ../sql-dialects && ~/meridian/$S/python -W ignore run_snowflake.py
       - name: Chapter 12 - Fabric export and notebook on local Spark
         if: always()
         run: |
