@@ -1,0 +1,42 @@
+// Chapter 24 - every DAX measure, in the order the chapter creates them.
+// Paste each one into Home > New measure in Power BI Desktop or the service.
+
+// ---- Step 4: the date table (Modeling > New table) ----
+Date =
+ADDCOLUMNS (
+    CALENDAR ( DATE ( 2021, 1, 1 ), DATE ( 2024, 12, 31 ) ),
+    "Year", YEAR ( [Date] ),
+    "Quarter", QUARTER ( [Date] ),
+    "Month", FORMAT ( [Date], "mmm" ),
+    "Month number", MONTH ( [Date] )
+)
+
+// ---- Step 5 ----
+Revenue =
+CALCULATE ( SUM ( fact_orders[total_amount] ), fact_orders[status] = "completed" )
+
+Orders = COUNTROWS ( fact_orders )
+
+Return rate =
+DIVIDE ( CALCULATE ( [Orders], fact_orders[status] = "returned" ), [Orders] )
+
+// ---- Step 6 ----
+Revenue PY =
+CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+
+Revenue YoY % =
+DIVIDE ( [Revenue] - [Revenue PY], [Revenue PY] )
+
+// ---- Exercise 1 ----
+Completed orders =
+CALCULATE ( [Orders], fact_orders[status] = "completed" )
+
+Average order =
+CALCULATE ( AVERAGE ( fact_orders[total_amount] ), fact_orders[status] = "completed" )
+
+// ---- Exercise 2 ----
+Revenue YTD = TOTALYTD ( [Revenue], 'Date'[Date] )
+
+// ---- Exercise 3 ----
+Category rank =
+RANKX ( ALL ( dim_category[category_name] ), [Revenue] )

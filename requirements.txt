@@ -17,7 +17,10 @@ boto3==1.44.3
 google-cloud-storage==3.17.1
 snowflake-connector-python[pandas]==4.8.1
 fakesnow==0.12.1
+tableauhyperapi==0.0.26963
 moto[s3,server]==5.2.5
+google-cloud-bigquery==3.47.0
+db-dtypes==1.9.0
 pyspark==4.2.0
 delta-spark==4.4.1
 dbt-core==1.12.7

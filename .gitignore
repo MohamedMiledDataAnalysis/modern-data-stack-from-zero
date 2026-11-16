@@ -26,3 +26,6 @@ fakesnow_data/
 upload/
 spark-warehouse/
 metastore_db/
+*.hyper
+hyperd*.log
+orders_flat.csv
