@@ -1,0 +1,217 @@
+name: Reproduce the book as a reader
+# A clean machine follows the book: create the database user, install requirements.txt
+# in a virtual environment, generate Meridian, then run every chapter's scripts and
+# corrections in book order. Chapters that need Docker (3, 4, 5, 9, 11, 26, 34, 35)
+# and R (19, 31) have their own workflows.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md']
+jobs:
+  reader:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '21'}
+      - uses: ikalnytskyi/action-setup-postgres@v7
+        with: {username: postgres, password: postgres, database: postgres, postgres-version: '16'}
+
+      - name: Chapter 0 - the book's folders and virtual environment
+        run: |
+          mkdir -p ~/meridian
+          cp -r "$GITHUB_WORKSPACE" ~/meridian/modern-data-stack-from-zero
+          cd ~/meridian
+          python -m venv .venv
+          if [ -d .venv/Scripts ]; then echo "$HOME/meridian/.venv/Scripts" >> $GITHUB_PATH; else echo "$HOME/meridian/.venv/bin" >> $GITHUB_PATH; fi
+      - name: Chapter 0 - pip install -r requirements.txt
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero
+          python -m pip install -q --upgrade pip
+          pip install -q -r requirements.txt
+          python -c "import pandas, sklearn, pyspark; print(pandas.__version__, sklearn.__version__, pyspark.__version__)"
+          python ch00-setup/check_setup.py
+
+      - name: Chapter 1 - user, database, data, queries
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero
+          PGPASSWORD=postgres psql -h localhost -U postgres -f ch01-postgresql/00_create_user.sql
+          python data/generate_meridian.py
+          python ch01-postgresql/connect.py
+          export PGPASSWORD=meridian2024
+          for f in ch01-postgresql/01_queries.sql ch01-postgresql/solutions/*.sql; do
+            echo "== $f"; psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f "$f" | tail -4; done
+
+      - name: Chapter 2 - files, API, load
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch02-files-apis-iot
+          python make_supplier_files.py && python read_csv.py && python read_csv_pandas.py && python read_excel.py
+          (uvicorn mock_api:app --port 8100 > api.log 2>&1 &) ; sleep 6
+          python call_api.py | tail -5
+          python solutions/exercise_2_page_size.py | tail -3
+          python solutions/exercise_3_retry.py | tail -3
+          python load_supplier_stock.py | tail -3
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f solutions/exercise_4_below_reorder.sql | tail -4
+      - name: Chapter 2 - MQTT sensors (Linux, Mosquitto)
+        if: always() && runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y -q mosquitto > /dev/null && sudo systemctl start mosquitto || (mosquitto -d)
+          cd ~/meridian/modern-data-stack-from-zero/ch02-files-apis-iot
+          (timeout 25 python subscriber.py > sub.log 2>&1 &) ; sleep 2
+          timeout 20 python sensor_simulator.py | tail -3 || true
+          sleep 4; tail -5 sub.log
+          timeout 25 python solutions/exercise_5_alert.py | tail -3 || true
+
+      - name: Chapter 6 - Fivetran simulation
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch06-fivetran
+          export PGPASSWORD=meridian2024
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f simulate_destination.sql
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f queries.sql | head -20
+          python solutions/mar_estimate.py
+      - name: Chapter 7 - Singer tap and target
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch07-stitch
+          python tap_meridian.py --limit 2500 | python target_jsonl.py
+          python tap_meridian.py --state state.json | python target_jsonl.py
+          cd solutions && python tap_products.py | python ../target_jsonl.py
+      - name: Chapter 8 - S3 on moto
+        if: always()
+        run: |
+          (moto_server -p 5000 > moto.log 2>&1 &) ; sleep 6
+          cd ~/meridian/modern-data-stack-from-zero/ch08-s3
+          python create_lake.py | tail -4 && python read_lake.py && python lifecycle.py | tail -4
+          python solutions/exercises.py
+      - name: Chapter 10 - Snowflake on fakesnow
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch10-snowflake
+          python -W ignore load_snowflake.py && python -W ignore query_snowflake.py && python -W ignore solutions/exercises.py
+      - name: Chapter 12 - Fabric export and notebook on local Spark
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch12-fabric
+          python export_parquet.py
+          python notebook/meridian_lakehouse.py 2>/dev/null | tail -12
+      - name: Chapter 13 - Spark
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch13-spark
+          python export_lake.py | tail -3
+          python spark_basics.py 2>/dev/null | tail -12
+          python spark_clean.py 2>/dev/null | tail -6
+          python solutions/exercises.py 2>/dev/null | tail -12
+      - name: Chapter 14 - dbt
+        if: always()
+        run: |
+          mkdir -p ~/.dbt
+          cp ~/meridian/modern-data-stack-from-zero/ch14-dbt/profiles/profiles.yml ~/.dbt/
+          cp -r ~/meridian/modern-data-stack-from-zero/ch14-dbt/meridian_dbt ~/meridian/meridian_dbt
+          cd ~/meridian/meridian_dbt
+          dbt debug | tail -3
+          dbt build | tail -8
+      - name: Chapter 15 - Delta Lake
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch15-databricks
+          python delta_local.py 2>/dev/null | grep -vE "^(found|downloading|\s|::)" | tail -25
+          python solutions/exercises.py 2>/dev/null | grep -vE "^(found|downloading|\s|::)" | tail -15
+      - name: Chapter 16 - Beam (its own environment)
+        if: always()
+        run: |
+          cd ~/meridian
+          python -m venv beam-venv
+          if [ -d beam-venv/Scripts ]; then B=beam-venv/Scripts; else B=beam-venv/bin; fi
+          $B/python -m pip install -q -r modern-data-stack-from-zero/ch16-beam/requirements.txt
+          cd modern-data-stack-from-zero/ch16-beam
+          ~/meridian/$B/python batch_pipeline.py | tail -5
+          ~/meridian/$B/python streaming_windows.py | tail -5
+          ~/meridian/$B/python solutions/exercises.py | tail -8
+      - name: Chapter 17 - pandas
+        if: always()
+        run: cd ~/meridian/modern-data-stack-from-zero/ch17-pandas && python pandas_basics.py | tail -8 && python solutions/exercises.py | tail -8
+      - name: Chapter 18 - Python analysis
+        if: always()
+        run: cd ~/meridian/modern-data-stack-from-zero/ch18-python-analysis && MPLBACKEND=Agg python analysis.py | tail -8 && MPLBACKEND=Agg python solutions/exercises.py | tail -8
+      - name: Chapter 20 - Jupyter and papermill
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch20-jupyter
+          papermill monthly_report.ipynb out_2023-02.ipynb -p month 2023-02 --log-output 2>&1 | tail -3
+          jupyter nbconvert --to html --no-input out_2023-02.ipynb
+          python run_all_months.py | tail -4
+          python solutions/weakest_month.py | tail -4
+      - name: Chapter 21 - scikit-learn
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch21-scikit-learn
+          python orders_only.py | tail -4 && python make_engagement.py | tail -4 && python train.py | tail -10 && python solutions/exercises.py | tail -10
+      - name: Chapter 22 - statsmodels
+        if: always()
+        run: cd ~/meridian/modern-data-stack-from-zero/ch22-statsmodels && MPLBACKEND=Agg python model.py | tail -10 && MPLBACKEND=Agg python solutions/exercises.py | tail -10
+      - name: Chapter 23 - Tableau Hyper extract
+        if: always()
+        run: cd ~/meridian/modern-data-stack-from-zero/ch23-tableau && python build_extract.py && python solutions/check_figures.py | head -9
+      - name: Chapters 24 and 25 - expected BI figures
+        if: always()
+        run: |
+          export PGPASSWORD=meridian2024
+          cd ~/meridian/modern-data-stack-from-zero
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f ch24-power-bi/check_figures.sql | head -8
+          cd ch25-looker-studio && python export_csv.py | head -1
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f check_figures.sql | tail -3
+      - name: Chapter 27 - Excel report
+        if: always()
+        run: cd ~/meridian/modern-data-stack-from-zero/ch27-excel && python build_report.py | tail -4 && python solutions/exercises.py | tail -6
+      - name: Chapters 28 to 30 - Streamlit, FastAPI and Flask tests
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero
+          (cd ch28-streamlit && python -m pytest solutions/test_app.py -q 2>&1 | tail -3)
+          (cd ch29-fastapi && python -m pytest solutions/test_main.py -q 2>&1 | tail -3)
+          (cd ch30-flask && python -m pytest solutions/test_app.py -q 2>&1 | tail -3)
+          for d in ch28-streamlit ch29-fastapi ch30-flask; do (cd $d && python -m pytest solutions -q > /dev/null 2>&1) || { echo "FAILED $d"; exit 1; }; done
+      - name: Chapter 32 - Great Expectations
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch32-great-expectations
+          python validate_orders.py | tail -8
+          python checkpoint.py | tail -6
+          python quality_gate.py; echo "quality gate exit code: $?"
+          python solutions/exercises.py | tail -10
+      - name: Chapter 33 - Airflow (Linux and macOS; Windows readers use WSL)
+        if: always() && runner.os != 'Windows'
+        run: |
+          cd ~/meridian
+          python -m venv airflow-venv
+          AF=https://raw.githubusercontent.com/apache/airflow
+          airflow-venv/bin/pip install -q -r modern-data-stack-from-zero/ch33-airflow/requirements.txt \
+            --constraint "$AF/constraints-3.4.0/constraints-3.13.txt"
+          export AIRFLOW_HOME=~/meridian/airflow
+          export AIRFLOW__CORE__DAGS_FOLDER=~/meridian/modern-data-stack-from-zero/ch33-airflow/dags
+          export AIRFLOW__CORE__LOAD_EXAMPLES=False
+          airflow-venv/bin/airflow version
+          airflow-venv/bin/airflow db migrate > /dev/null
+          airflow-venv/bin/airflow dags test meridian_nightly 2>&1 | grep -E "Marking run|state=|success|failed" | tail -8
+      - name: Chapter 34 - Prometheus exporter
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch34-prometheus
+          (python meridian_exporter.py > exporter.log 2>&1 &) ; sleep 8
+          curl -s localhost:8001/metrics | grep "^meridian_" | head -8
