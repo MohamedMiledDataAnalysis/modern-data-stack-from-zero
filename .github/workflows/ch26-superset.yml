@@ -1,0 +1,34 @@
+name: Chapter 26 - Superset
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch26-superset/**', '.github/workflows/ch26-superset.yml']
+jobs:
+  superset:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_USER: meridian_user, POSTGRES_PASSWORD: meridian2024, POSTGRES_DB: meridian_db}
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -q psycopg2-binary SQLAlchemy==2.1.8 Faker==40.54.0 pandas==3.1.1 requests
+      - run: python data/generate_meridian.py > /dev/null
+      - name: Superset tags
+        run: |
+          curl -s "https://hub.docker.com/v2/repositories/apache/superset/tags?page_size=100&name=6.1" \
+            | python3 -c "import sys,json,re; print(sorted({t['name'] for t in json.load(sys.stdin)['results'] if re.fullmatch(r'[0-9.]+', t['name'])}))"
+      - name: Start Superset as the book does
+        run: |
+          bash ch26-superset/start_superset.sh
+          docker exec superset /app/.venv/bin/python -c "import superset, psycopg2; print('superset', superset.__version__ if hasattr(superset,'__version__') else '?', 'psycopg2', psycopg2.__version__)" || true
+          curl -s localhost:8088/health; echo
+      - name: API
+        run: cd ch26-superset && python superset_api.py
+      - name: Exercises
+        if: always()
+        run: cd ch26-superset && python solutions/exercises.py
