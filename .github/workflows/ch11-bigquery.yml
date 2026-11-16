@@ -28,10 +28,10 @@ jobs:
         run: cd ch11-bigquery && date && timeout 600 python -u query_bigquery.py && date
       - name: Exercise 1
         if: always()
-        run: cd ch11-bigquery && date && timeout 300 python -u solutions/exercises.py 1; date
+        run: cd ch11-bigquery && docker rm -f bq-emulator >/dev/null && bash start_emulator.sh >/dev/null && sleep 5 && python load_bigquery.py >/dev/null && date && timeout 300 python -u solutions/exercises.py 1; date
       - name: Exercise 2
         if: always()
-        run: cd ch11-bigquery && date && timeout 300 python -u solutions/exercises.py 2; date
+        run: cd ch11-bigquery && docker rm -f bq-emulator >/dev/null && bash start_emulator.sh >/dev/null && sleep 5 && python load_bigquery.py >/dev/null && date && timeout 300 python -u solutions/exercises.py 2; date
       - name: Exercise 3
         if: always()
-        run: cd ch11-bigquery && date && timeout 300 python -u solutions/exercises.py 3; date
+        run: cd ch11-bigquery && docker rm -f bq-emulator >/dev/null && bash start_emulator.sh >/dev/null && sleep 5 && python load_bigquery.py >/dev/null && date && timeout 300 python -u solutions/exercises.py 3; date
