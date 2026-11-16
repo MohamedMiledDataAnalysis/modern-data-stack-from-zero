@@ -39,7 +39,7 @@ separate environments of Chapters 10, 16 and 33. Chapters that need Docker (3, 4
 | 14 | dbt 1.12.7 | models, tests, exercises | Local, `reproduce.yml` | — |
 | 15 | Delta Lake 4.4.1 | Part A, exercises; `export_for_databricks.py` | `ch15-delta.yml`, `reproduce.yml` | Part B on Databricks Free Edition |
 | 16 | Beam 2.77.0 | batch and streaming pipelines, exercises | Local, `reproduce.yml` | Step 5 on Google Cloud Dataflow |
-| 17 | pandas 3.1.1 | all scripts, exercises | Local, `reproduce.yml` | — |
+| 17 | pandas 3.1.1 | all scripts, exercises; Step 7 (`scale_up.py`, `size_test.py`) at 5 and 20 million orders | Local, `reproduce.yml` | every-column pandas on 20 million orders runs on the 16 GB Ubuntu runner only; on 8 GB it is stopped (`Killed`), as the book shows |
 | 18 | Python analysis | all scripts, exercises | Local, `reproduce.yml` | — |
 | 19 | R 4.6.2 | `analysis.R`, exercises | `ch19-r.yml` | — |
 | 20 | Jupyter | notebook, papermill runs, exercises | Local, `reproduce.yml` | — |
