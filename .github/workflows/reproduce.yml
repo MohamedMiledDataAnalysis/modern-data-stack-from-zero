@@ -76,6 +76,17 @@ jobs:
           python solutions/exercise_3_retry.py | tail -3
           python load_supplier_stock.py | tail -3
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f solutions/exercise_4_below_reorder.sql | tail -4
+      - name: Chapter 2 - SQL Server source (Linux, Docker)
+        if: always() && runner.os == 'Linux'
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero/ch02-files-apis-iot/sqlserver
+          bash start_sqlserver.sh
+          for i in $(seq 1 40); do python -c "import pymssql; pymssql.connect(server='localhost',user='sa',password='Meridian2026!').close()" 2>/dev/null && break; sleep 3; done
+          python make_purchase_orders.py
+          python read_sqlserver.py
+          python ../solutions/exercise_6_open_orders.py
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -c "SELECT status, COUNT(*) FROM purchase_orders GROUP BY status ORDER BY status;"
+          docker rm -f sqlserver
       - name: Chapter 2 - MQTT sensors (Linux, Mosquitto)
         if: always() && runner.os == 'Linux'
         run: |
