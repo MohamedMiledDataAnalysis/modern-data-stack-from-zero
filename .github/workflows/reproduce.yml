@@ -68,6 +68,15 @@ jobs:
           for f in ch01-postgresql/01_queries.sql ch01-postgresql/solutions/*.sql; do
             echo "== $f"; psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f "$f" | tail -4; done
 
+      - name: Foundation 3 - view, procedure and function
+        if: always()
+        run: |
+          cd ~/meridian/modern-data-stack-from-zero
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f foundations/f3_database_objects.sql | tee f3.log
+          grep -q '150311' f3.log
+          grep -q '1096 | 108118520.21' f3.log
+          grep -q '1 |       933.32 | 186.66' f3.log
+
       - name: SQL dialects - PostgreSQL and Spark SQL
         if: always()
         run: |

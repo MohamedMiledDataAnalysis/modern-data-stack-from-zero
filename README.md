@@ -29,6 +29,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 
 | Folder | Chapter |
 |:--|:--|
+| `foundations/` | Foundation 3 — the view, stored procedure and function examples, runnable after Chapter 1 |
 | `data/` | Chapter 1 — the Meridian Retail generator, and the data itself as CSV files in `data/meridian/` |
 | `ch00-setup/` | Chapter 0 — your machine and your tools |
 | `ch01-postgresql/` | Chapter 1 — SQL databases: PostgreSQL |
