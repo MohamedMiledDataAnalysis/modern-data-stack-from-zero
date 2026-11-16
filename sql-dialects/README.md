@@ -1,7 +1,7 @@
 # SQL: one language, many dialects
 
 The same five questions about Meridian, written in the five dialects the book uses.
-Every version returns the same answers (see the interlude after Chapter 1).
+Every version returns the same answers (see the interlude after Chapter 1), with one exception on the BigQuery emulator: query 4's running total comes back as 0. That is a fault of the emulator; real BigQuery returns 3090147.46, 5850606.69 and 8841165.89.
 
 | File | Dialect | Run it with |
 |:--|:--|:--|

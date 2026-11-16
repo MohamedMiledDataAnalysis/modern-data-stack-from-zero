@@ -23,6 +23,7 @@ separate environments of Chapters 10, 16 and 33. Chapters that need Docker (3, 4
 |---:|:--|:--|:--|:--|
 | 0 | Setup | `check_setup.py` | Local, `reproduce.yml` | Installers on Windows and macOS |
 | 1 | PostgreSQL | all queries, exercises | Local, `reproduce.yml` | — |
+| Interlude | SQL dialects | the five queries in `sql-dialects/` | PostgreSQL 16 and Spark SQL: Local, `reproduce.yml`; Snowflake SQL on fakesnow: Local, `reproduce.yml`; T-SQL on SQL Server 2022: `ch12-tsql.yml`; GoogleSQL on the BigQuery emulator: `ch11-bigquery.yml` | query 4 on the BigQuery emulator returns 0 for the running total, an emulator fault; the other 24 results match |
 | 2 | Files, APIs, IoT | all scripts, mock API, MQTT simulator | Local, `reproduce.yml` | — |
 | 3 | NiFi 2.12.0 | start-up; the flow of Steps 3–7 built with the same settings through the REST API, 500 valid / 3 rejected | `ch03-nifi.yml` | the canvas clicks themselves; provenance screens |
 | 4 | Kafka 4.4.0 | producer, consumer, exercises | `ch04-kafka.yml` | — |

@@ -26,6 +26,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `data/` | Chapter 1 — the Meridian Retail generator |
 | `ch00-setup/` | Chapter 0 — your machine and your tools |
 | `ch01-postgresql/` | Chapter 1 — SQL databases: PostgreSQL |
+| `sql-dialects/` | Interlude — SQL, one language, many dialects |
 | `ch02-files-apis-iot/` | Chapter 2 — flat files, APIs and IoT streams |
 | `ch03-nifi/` | Chapter 3 — Apache NiFi |
 | `ch04-kafka/` | Chapter 4 — Apache Kafka |
