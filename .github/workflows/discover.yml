@@ -5,9 +5,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - run: |
-          for repo in apache/kafka apache/superset grafana/grafana prom/prometheus apache/airflow; do
-            echo "== $repo"
-            curl -s "https://hub.docker.com/v2/repositories/$repo/tags?page_size=40&ordering=last_updated" \
-              | python3 -c "import sys,json; print(' '.join(t['name'] for t in json.load(sys.stdin)['results']))"
-          done
-          docker run --rm apache/kafka:latest /opt/kafka/bin/kafka-topics.sh --version
+          curl -s "https://hub.docker.com/v2/repositories/apache/superset/tags?page_size=60&ordering=last_updated" \
+            | python3 -c "import sys,json; print(' '.join(t['name'] for t in json.load(sys.stdin)['results']))"
+      - run: |
+          docker pull -q apache/superset:latest
+          docker run --rm --entrypoint sh apache/superset:latest -c 'superset version 2>/dev/null | tail -3; which python; python --version; ls /app/.venv/bin 2>/dev/null | head -5; python -c "import psycopg2" && echo has-psycopg2 || echo no-psycopg2; which uv pip; id'
