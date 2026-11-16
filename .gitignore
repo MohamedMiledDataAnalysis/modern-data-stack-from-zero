@@ -22,3 +22,4 @@ out_*.html
 ch32-great-expectations/gx/
 output/
 state.json
+fakesnow_data/

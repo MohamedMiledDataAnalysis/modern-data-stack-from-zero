@@ -34,6 +34,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch07-stitch/` | Chapter 7 — Stitch and Singer |
 | `ch08-s3/` | Chapter 8 — Amazon S3 |
 | `ch09-gcs/` | Chapter 9 — Google Cloud Storage |
+| `ch10-snowflake/` | Chapter 10 — Snowflake |
 | `ch13-spark/` | Chapter 13 — Apache Spark |
 | `ch14-dbt/` | Chapter 14 — dbt |
 | `ch15-databricks/` | Chapter 15 — Databricks and Delta Lake |
