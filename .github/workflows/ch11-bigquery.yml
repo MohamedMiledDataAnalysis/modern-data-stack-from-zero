@@ -24,9 +24,7 @@ jobs:
           sleep 8 && docker logs bq-emulator 2>&1 | tail -5
       - name: Load
         run: cd ch11-bigquery && python load_bigquery.py
-      - name: Probe
-        run: cd ch11-bigquery && timeout 900 python -u probe.py
       - name: Query
-        run: cd ch11-bigquery && python query_bigquery.py
+        run: cd ch11-bigquery && timeout 600 python -u query_bigquery.py
       - name: Exercises
-        run: cd ch11-bigquery && python solutions/exercises.py
+        run: cd ch11-bigquery && timeout 600 python -u solutions/exercises.py

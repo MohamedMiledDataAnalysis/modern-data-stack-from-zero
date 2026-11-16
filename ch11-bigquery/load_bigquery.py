@@ -28,6 +28,10 @@ client.create_dataset(dataset, exists_ok=True)
 pg = create_engine(PG_URL)
 for table in TABLES:
     df = pd.read_sql(f'SELECT * FROM {table}', pg)
+    if table == 'fact_orders' and MODE == 'local':
+        # the emulator stalls on 250,000 rows: test on the first quarter of 2023
+        df = df[(df.order_date >= pd.Timestamp('2023-01-01').date())
+                & (df.order_date <= pd.Timestamp('2023-03-31').date())]
     schema = [bigquery.SchemaField(name, kind) for name, kind in SCHEMAS[table]]
     if table == 'fact_orders' and MODE == 'gcp':   # the emulator does not support partitions
         # partitioned by order date, clustered by status: queries on a month read only that month
@@ -44,3 +48,5 @@ for table in TABLES:
     job.result()                                  # waits for the load job to finish
     rows = client.get_table(f'{PROJECT}.{DATASET}.{table}').num_rows
     print(f'{table:<13}{rows:>8,} rows')
+    if MODE == 'gcp' and table == 'fact_orders':
+        print('partitioned by', client.get_table(f'{PROJECT}.{DATASET}.{table}').time_partitioning.field)

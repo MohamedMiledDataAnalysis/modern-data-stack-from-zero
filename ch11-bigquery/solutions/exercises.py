@@ -24,14 +24,15 @@ for r in client.query(sql).result():
 print('Exercise 2 - a query parameter instead of string formatting')
 sql = f"""
 SELECT COUNT(*) AS n FROM {T}.fact_orders
-WHERE status = @status AND order_date >= @since"""
+WHERE status = @status AND order_date BETWEEN @first_day AND @last_day"""
 config = bigquery.QueryJobConfig(query_parameters=[
     bigquery.ScalarQueryParameter('status', 'STRING', 'returned'),
-    bigquery.ScalarQueryParameter('since', 'DATE', '2023-07-01'),
+    bigquery.ScalarQueryParameter('first_day', 'DATE', '2023-03-01'),
+    bigquery.ScalarQueryParameter('last_day', 'DATE', '2023-03-31'),
 ])
 print(list(client.query(sql, job_config=config).result())[0].n)
 
-print('Exercise 3 - top 3 products by revenue in each category, 2023')
+print('Exercise 3 - top 3 products by revenue in each category, first quarter of 2023')
 sql = f"""
 SELECT category_name, product_name, revenue
 FROM (
@@ -42,7 +43,7 @@ FROM (
   FROM {T}.fact_orders AS o
   JOIN {T}.dim_product AS p USING (product_id)
   JOIN {T}.dim_category AS cat USING (category_id)
-  WHERE o.status = 'completed' AND EXTRACT(YEAR FROM o.order_date) = 2023
+  WHERE o.status = 'completed' AND o.order_date BETWEEN '2023-01-01' AND '2023-03-31'
   GROUP BY cat.category_name, p.product_name
 )
 WHERE rank_in_category <= 3
