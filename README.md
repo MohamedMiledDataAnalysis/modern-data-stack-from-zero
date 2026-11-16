@@ -44,6 +44,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch29-fastapi/` | Chapter 29 — FastAPI |
 | `ch30-flask/` | Chapter 30 — Flask |
 | `ch31-shiny/` | Chapter 31 — R Shiny |
+| `ch32-great-expectations/` | Chapter 32 — Great Expectations |
 
 ## How to use this repository
 
