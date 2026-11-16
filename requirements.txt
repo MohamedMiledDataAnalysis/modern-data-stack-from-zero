@@ -1,6 +1,6 @@
 # The Modern Data Stack, Second Edition
 # Versions tested with Python 3.13 in November 2026.
-# Chapters 16 (Beam), 26 (Superset) and 33 (Airflow) use their own
+# Chapters 10 (Snowflake), 16 (Beam), 26 (Superset) and 33 (Airflow) use their own
 # environment: see the requirements.txt file in those chapter folders.
 psycopg2-binary==2.9.13
 SQLAlchemy==2.1.8
@@ -15,13 +15,12 @@ pyarrow==26.0.1
 matplotlib==3.11.2
 boto3==1.44.3
 google-cloud-storage==3.17.1
-snowflake-connector-python[pandas]==4.8.1
-fakesnow==0.12.1
 tableauhyperapi==0.0.26963
 moto[s3,server]==5.2.5
 google-cloud-bigquery==3.47.0
 db-dtypes==1.9.0
 pyspark==4.2.0
+zstandard==0.25.0
 delta-spark==4.4.1
 dbt-core==1.12.7
 dbt-postgres==1.11.0

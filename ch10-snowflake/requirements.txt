@@ -1,0 +1,8 @@
+# Chapter 10 — Snowflake runs in its own environment.
+# The Snowflake connector's pandas tools require pandas below 3.0, and fakesnow
+# does not yet work with connector 5: both pins are deliberate.
+snowflake-connector-python[pandas]==4.8.1
+fakesnow==0.12.1
+pandas==2.3.3
+psycopg2-binary==2.9.13
+SQLAlchemy==2.1.8

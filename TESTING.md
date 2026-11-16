@@ -20,7 +20,7 @@ Docker images or Maven/CRAN downloads.
 | 7 | Stitch / Singer | Singer tap and target, exercises | Local | everything inside Stitch's service |
 | 8 | Amazon S3 | all scripts against moto | Local | real AWS account |
 | 9 | Cloud Storage | all scripts against fake-gcs-server 1.52 | `ch09-gcs.yml` | lifecycle rules and location on real Google Cloud |
-| 10 | Snowflake | load, queries, clone, exercises 1–2 against fakesnow 0.12.1 | Local | Time Travel, resource monitor, Exercise 3, real account |
+| 10 | Snowflake | load, queries, clone, exercises 1–2 against fakesnow 0.12.1, in the chapter's own environment | Local | Time Travel, resource monitor, Exercise 3, real account |
 | 11 | BigQuery | load and Step 3–4 query against bigquery-emulator 0.8.1, first quarter of 2023 | `ch11-bigquery.yml` | exercise GoogleSQL (answers from `check_exercises.sql` in PostgreSQL); real sandbox |
 | 12 | Microsoft Fabric | Parquet export; notebook code on local Spark; all T-SQL on SQL Server 2022 | Local, `ch12-tsql.yml` | everything inside Fabric |
 | 13 | Spark 4.2.0 | all scripts, exercises | Local | — |
@@ -35,7 +35,7 @@ Docker images or Maven/CRAN downloads.
 | 22 | statsmodels 0.15.0 | all scripts, exercises | Local | — |
 | 23 | Tableau | Hyper extract; every view's figure in SQL | Local | the clicks in Tableau Desktop |
 | 24 | Power BI | every visual's figure in PostgreSQL | Local | the DAX itself, in Power BI |
-| 25 | Looker Studio | CSV export; every chart's figure in PostgreSQL | Local | the clicks in Looker Studio |
+| 25 | Data Studio (formerly Looker Studio) | CSV export; every chart's figure in PostgreSQL | Local | the clicks in Data Studio |
 | 26 | Superset 6.1.0 | start-up, connection, dataset, SQL Lab, chart, exercises (through the API) | `ch26-superset.yml` | the same steps clicked in the web interface |
 | 27 | Excel | report built with openpyxl, values checked | Local | opening the file in Excel |
 | 28 | Streamlit 1.67.0 | app and AppTest tests | Local | — |

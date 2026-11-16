@@ -49,7 +49,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch22-statsmodels/` | Chapter 22 — statsmodels |
 | `ch23-tableau/` | Chapter 23 — Tableau |
 | `ch24-power-bi/` | Chapter 24 — Power BI |
-| `ch25-looker-studio/` | Chapter 25 — Looker Studio |
+| `ch25-looker-studio/` | Chapter 25 — Data Studio (formerly Looker Studio) |
 | `ch26-superset/` | Chapter 26 — Apache Superset |
 | `ch27-excel/` | Chapter 27 — Microsoft Excel |
 | `ch28-streamlit/` | Chapter 28 — Streamlit |
