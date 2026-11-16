@@ -12,3 +12,13 @@
 | `solutions/` | corrections to the exercises |
 
 Run every script from this folder: `cd ch02-files-apis-iot`.
+
+## Step 8: SQL Server as a second source
+
+```bash
+cd sqlserver
+bash start_sqlserver.sh          # SQL Server 2022 in Docker; wait 20 seconds
+python make_purchase_orders.py   # the purchasing database meridian_erp
+python read_sqlserver.py         # read it as meridian_reader, load it into PostgreSQL
+docker stop sqlserver            # Chapter 12 starts it again with: docker start sqlserver
+```
