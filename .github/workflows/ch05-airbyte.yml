@@ -1,6 +1,11 @@
 name: Chapter 5 - Airbyte
 on:
   workflow_dispatch:
+    inputs:
+      manual_abctl:
+        description: 'Skip the installer and test the manual install of the book'
+        type: boolean
+        default: false
   push:
     paths: ['ch05-airbyte/**', '.github/workflows/ch05-airbyte.yml']
 jobs:
@@ -24,13 +29,21 @@ jobs:
       - name: Load Meridian
         run: python data/generate_meridian.py
       - name: Install abctl
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # The installer's request for the latest release sometimes fails for a moment;
           # the book tells the reader to run the same line again (Chapter 5, Step 1).
           for i in 1 2 3 4 5; do
+            [ "${{ inputs.manual_abctl }}" = "true" ] && break
             curl -LsfS https://get.airbyte.com | bash - && break
             echo "attempt $i failed; retrying in 20 s"; sleep 20
           done
+          # If the installer keeps failing, install abctl by hand, as the book's mistake box says
+          if ! command -v abctl >/dev/null; then
+            gh release download -R airbytehq/abctl --pattern '*linux-amd64.tar.gz' -D /tmp/abctl
+            tar -xzf /tmp/abctl/abctl-*.tar.gz -C /tmp/abctl && sudo mv /tmp/abctl/abctl-*/abctl /usr/local/bin/
+          fi
           abctl version
       - name: Install Airbyte locally (low-resource mode)
         run: abctl local install --low-resource-mode --chart-version 2.5.0 2>&1 | tail -25
