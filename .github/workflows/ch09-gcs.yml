@@ -23,6 +23,8 @@ jobs:
           cd ch09-gcs && bash start_emulator.sh
           sleep 5 && docker logs fake-gcs 2>&1 | tail -3
       - name: Lake
-        run: cd ch09-gcs && python create_lake.py && python read_lake.py && python lifecycle.py
+        run: |
+          cd ch09-gcs && python create_lake.py && python read_lake.py
+          python lifecycle.py || echo "exit code $?"
       - name: Exercises
         run: cd ch09-gcs && python solutions/exercises.py

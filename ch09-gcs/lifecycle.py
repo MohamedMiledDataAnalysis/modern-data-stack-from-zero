@@ -1,5 +1,11 @@
 """Chapter 9, Step 5 — versioning and lifecycle rules on the bucket."""
-from lake_config import BUCKET, gcs_client
+import sys
+
+from lake_config import BUCKET, MODE, gcs_client
+
+if MODE != 'gcp':
+    sys.exit('The emulator does not support bucket settings. '
+             'Run this step on Google Cloud (Step 6).')
 
 bucket = gcs_client().get_bucket(BUCKET)
 bucket.versioning_enabled = True
