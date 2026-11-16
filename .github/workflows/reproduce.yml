@@ -101,7 +101,8 @@ jobs:
       - name: Chapter 8 - S3 on moto
         if: always()
         run: |
-          (moto_server -p 5000 > moto.log 2>&1 &) ; sleep 6
+          (moto_server -p 5000 > moto.log 2>&1 &)
+          for i in $(seq 1 30); do curl -s -o /dev/null http://localhost:5000 && break; sleep 2; done; cat moto.log
           cd ~/meridian/modern-data-stack-from-zero/ch08-s3
           python create_lake.py | tail -4 && python read_lake.py && python lifecycle.py | tail -4
           python solutions/exercises.py
