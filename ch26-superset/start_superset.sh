@@ -8,8 +8,8 @@ docker run -d --name superset -p 8088:8088 \
   --add-host=host.docker.internal:host-gateway \
   meridian-superset
 sleep 10
-docker exec superset superset db upgrade > /dev/null
+docker exec superset superset db upgrade > /dev/null 2>&1
 docker exec superset superset fab create-admin --username admin --password meridian2026 \
   --firstname Amina --lastname Admin --email admin@meridian.example
-docker exec superset superset init > /dev/null
+docker exec superset superset init > /dev/null 2>&1
 echo "Superset is ready: http://localhost:8088  (admin / meridian2026)"

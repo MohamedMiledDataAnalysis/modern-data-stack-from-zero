@@ -5,6 +5,7 @@ runs a query in SQL Lab, and builds a chart whose data it then reads back.
 """
 import json
 import os
+from datetime import datetime, timezone
 
 from client import BASE, find, session
 
@@ -77,4 +78,5 @@ if r.status_code != 200:                      # older charts have no saved query
     r = s.post(f'{BASE}/api/v1/chart/data', json=query_context)
 r.raise_for_status()
 for row in r.json()['result'][0]['data']:
-    print('chart data:', row)
+    year = datetime.fromtimestamp(row['order_date'] / 1000, tz=timezone.utc).year
+    print(f"chart data: {year}  {row['Revenue']:>16,.2f}")
