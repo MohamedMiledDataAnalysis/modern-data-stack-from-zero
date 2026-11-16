@@ -45,6 +45,7 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 | `ch30-flask/` | Chapter 30 — Flask |
 | `ch31-shiny/` | Chapter 31 — R Shiny |
 | `ch32-great-expectations/` | Chapter 32 — Great Expectations |
+| `ch33-airflow/` | Chapter 33 — Apache Airflow |
 
 ## How to use this repository
 

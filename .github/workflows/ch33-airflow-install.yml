@@ -1,0 +1,27 @@
+name: Chapter 33 - Airflow install with constraints
+on:
+  workflow_dispatch:
+  push:
+    paths: ['ch33-airflow/**', '.github/workflows/ch33-airflow-install.yml']
+jobs:
+  install:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Install exactly as the book does
+        run: |
+          pip install "apache-airflow==3.4.0" psycopg2-binary==2.9.13 \
+            --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.4.0/constraints-3.13.txt"
+          airflow version
+      - name: The DAG imports cleanly
+        env:
+          AIRFLOW_HOME: /tmp/af
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/ch33-airflow/dags
+          AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+        run: |
+          airflow db migrate > /dev/null
+          airflow dags reserialize > /dev/null 2>&1
+          airflow dags list
+          airflow dags list-import-errors
