@@ -25,7 +25,7 @@ jobs:
       - name: Load
         run: cd ch11-bigquery && python load_bigquery.py
       - name: Probe
-        run: cd ch11-bigquery && timeout 900 python probe.py
+        run: cd ch11-bigquery && timeout 900 python -u probe.py
       - name: Query
         run: cd ch11-bigquery && python query_bigquery.py
       - name: Exercises
