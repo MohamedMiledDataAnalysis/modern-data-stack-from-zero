@@ -9,7 +9,7 @@
 Practise the T-SQL locally on SQL Server 2022:
 
 ```bash
-docker run -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='Meridian2026!' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+docker run --name sqlserver -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD='Meridian2026!' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
 pip install pymssql==2.4.6
 python tsql/load_sqlserver.py
 python tsql/run_sql.py tsql/queries.sql

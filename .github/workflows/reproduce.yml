@@ -44,6 +44,8 @@ jobs:
           python -m pip install -q --upgrade pip
           pip install -q -r requirements.txt
           python -c "import pandas, sklearn, pyspark; print(pandas.__version__, sklearn.__version__, pyspark.__version__)"
+          # CI installs no R (both systems) and no Docker on macOS; readers run the check strict
+          if [ "$RUNNER_OS" = "macOS" ]; then export MERIDIAN_SKIP="R,docker"; else export MERIDIAN_SKIP="R"; fi
           python ch00-setup/check_setup.py
 
       - name: Chapter 1 - user, database, data, queries
@@ -67,6 +69,7 @@ jobs:
         run: |
           cd ~/meridian/modern-data-stack-from-zero/ch02-files-apis-iot
           python make_supplier_files.py && python read_csv.py && python read_csv_pandas.py && python read_excel.py
+          python solutions/exercise_1_per_supplier.py | tail -1
           (uvicorn mock_api:app --port 8100 > api.log 2>&1 &) ; sleep 6
           python call_api.py | tail -5
           python solutions/exercise_2_page_size.py | tail -3
@@ -81,7 +84,11 @@ jobs:
           (timeout 25 python subscriber.py > sub.log 2>&1 &) ; sleep 2
           timeout 20 python sensor_simulator.py | tail -3 || true
           sleep 4; tail -5 sub.log
-          timeout 25 python solutions/exercise_5_alert.py | tail -3 || true
+          # Exercise 5, as the book runs it: the alert first, then a fresh simulator
+          (timeout 30 python solutions/exercise_5_alert.py > alert.log 2>&1 &) ; sleep 2
+          timeout 20 python sensor_simulator.py > /dev/null || true
+          sleep 3; cat alert.log
+          grep -q 'seq=13' alert.log
 
       - name: Chapter 6 - Fivetran simulation
         if: always()

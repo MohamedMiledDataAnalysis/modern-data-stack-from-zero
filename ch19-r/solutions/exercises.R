@@ -20,5 +20,4 @@ done |> group_by(category_name) |>
   arrange(desc(median_order)) |> head(3) |> print()
 
 cat("Exercise 3\n")
-x <- done$quantity; y <- done$amount
-print(cor.test(x, y))
+print(cor.test(done$quantity, done$amount))

@@ -12,4 +12,5 @@ df = df.sort_values('order_id')                 # the same row order on every ma
 df.to_csv('orders_flat.csv', index=False)
 size = Path('orders_flat.csv').stat().st_size
 print(f'orders_flat.csv: {len(df):,} rows, {size / 1e6:.1f} MB')
-print(df.head(3).to_string(index=False))
+print(df.head(3)[['order_id', 'order_date', 'status', 'total_amount', 'country_name']]
+      .to_string(index=False))

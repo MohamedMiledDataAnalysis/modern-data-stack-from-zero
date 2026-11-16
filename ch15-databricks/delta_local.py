@@ -37,7 +37,9 @@ target = DeltaTable.forPath(spark, TABLE)
  .execute())
 new = (spark.read.format('delta').load(TABLE).filter('order_id = 4')
        .withColumn('order_id', F.lit(250001).cast('long'))
-       .withColumn('order_date', F.to_date(F.lit('2024-01-02'))))
+       .withColumn('order_date', F.to_date(F.lit('2024-01-02')))
+       .withColumn('year', F.lit(2024))          # keep the partition columns
+       .withColumn('month', F.lit(1)))           # in line with the new date
 (target.alias('t').merge(new.alias('n'), 't.order_id = n.order_id')
  .whenNotMatchedInsertAll().execute())
 

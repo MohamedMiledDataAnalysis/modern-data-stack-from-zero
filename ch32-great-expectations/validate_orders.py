@@ -48,5 +48,5 @@ for r in result.results:
     cfg = r.expectation_config
     target = cfg.kwargs.get('column') or cfg.description or ''
     count = r.result.get('unexpected_count', r.result.get('observed_value'))
-    print(f"{'PASS' if r.success else 'FAIL'}  {cfg.type:<42} "
-          f"{target[:38]:<38} unexpected={count}")
+    print(f"{'PASS' if r.success else 'FAIL'}  {cfg.type:<36} "
+          f"{target[:22]:<22} {count}")

@@ -37,3 +37,25 @@
 | QueryRecord | accepted | `SELECT * FROM FLOWFILE WHERE stock_qty >= 0` → Write landed |
 | QueryRecord | negative | `SELECT * FROM FLOWFILE WHERE stock_qty < 0` → Write quarantine |
 | QueryRecord | failure / original | Write quarantine / terminate |
+
+## Writing to PostgreSQL instead of a folder (not run by the test workflow)
+
+`<host>` is `host.docker.internal` on macOS, and the first value of `hostname -I` on Ubuntu and WSL.
+
+| Processor / service | Property | Value |
+|:--|:--|:--|
+| DBCPConnectionPool | Database Connection URL | `jdbc:postgresql://<host>:5432/meridian_db` |
+| DBCPConnectionPool | Database Driver Class Name | `org.postgresql.Driver` |
+| DBCPConnectionPool | Database Driver Location(s) | `/data/postgresql-<version>.jar` (the file you downloaded) |
+| DBCPConnectionPool | Database User / Password | `meridian_user` / `meridian2024` |
+| JsonTreeReader | Schema Access Strategy / Schema Text | `Use 'Schema Text' Property` / content of `supplier_stock.avsc` |
+| PutDatabaseRecord | Record Reader | `JsonTreeReader` |
+| PutDatabaseRecord | Database Type / Statement Type | `PostgreSQL` / `INSERT` |
+| PutDatabaseRecord | Database Connection Pooling Service | `DBCPConnectionPool` |
+| PutDatabaseRecord | Table Name | `supplier_stock` |
+
+## Permissions
+
+NiFi runs as user 1000 inside the container. If `id -u` prints another number on Ubuntu, run
+`chmod 777 ~/meridian/nifi/drops ~/meridian/nifi/landed ~/meridian/nifi/quarantine`
+(the test workflow does this: its user is 1001).

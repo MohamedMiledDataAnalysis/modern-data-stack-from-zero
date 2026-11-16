@@ -7,3 +7,5 @@ From this folder:
 
 `alert_rules.yml` holds the four alerts. Check the files with:
 `docker run --rm -v "$PWD:/cfg" --entrypoint promtool prom/prometheus:v3.16.0 check config /cfg/prometheus.yml`
+
+`solutions/alert_rules_ex2.yml` — Exercise 2: the four alerts plus `MeridianFewCustomers`; copy it over `alert_rules.yml` to use it.

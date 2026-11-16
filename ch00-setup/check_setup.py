@@ -2,7 +2,15 @@
 
 Run from the repository folder, with the virtual environment active:
     python ch00-setup/check_setup.py
+
+The script exits with code 0 when every tool is found, and 1 when one is missing.
+
+MERIDIAN_SKIP (for automated tests only, not for readers): a comma-separated list
+of tool names, as printed in the first column, that the machine running the test
+does not install, for example MERIDIAN_SKIP="R,docker". A skipped tool that is
+missing prints SKIPPED and does not count as missing. Readers leave it unset.
 """
+import os
 import re
 import shutil
 import subprocess
@@ -41,15 +49,20 @@ checks = [
     ('docker',   command_version(['docker', '--version'], r'(\d+\.\d+\.\d+)')),
 ]
 
+skipped = {name.strip().lower()
+           for name in os.environ.get('MERIDIAN_SKIP', '').split(',') if name.strip()}
+
 missing = 0
 for name, found in checks:
     if found:
         print(f'{name:<11} {found:<9} OK')
+    elif name.lower() in skipped:
+        print(f'{name:<11} {"":<9} SKIPPED')
     else:
         print(f'{name:<11} {"":<9} MISSING')
         missing += 1
 
 if missing:
     print(f'{missing} tool(s) missing. Repeat the matching step of Chapter 0.')
-else:
-    print('All tools found. You are ready for Chapter 1.')
+    sys.exit(1)
+print('All tools found. You are ready for Chapter 1.')

@@ -47,4 +47,14 @@ monthly = pd.read_excel('meridian_report_2023.xlsx', sheet_name='Monthly',
                         skiprows=2, nrows=12)
 countries = ['France', 'Germany', 'Italy', 'Netherlands', 'Spain', 'UK']
 print(monthly[['Month', 'France', 'UK']].head(3))
-print('Exercise 3:', round(monthly[countries].sum().sum(), 2))
+db = pd.read_sql("""
+    SELECT to_char(order_date, 'YYYY-MM') AS month,
+           SUM(total_amount)::float AS revenue
+    FROM fact_orders
+    WHERE status = 'completed' AND EXTRACT(YEAR FROM order_date) = 2023
+    GROUP BY 1 ORDER BY 1""", engine)
+by_month = monthly[countries].sum(axis=1).round(2)
+assert list(monthly['Month']) == list(db['month'])
+assert (by_month.values == db['revenue'].round(2).values).all()
+total = round(by_month.sum(), 2)
+print('Exercise 3:', len(db), 'months match PostgreSQL; total', total)

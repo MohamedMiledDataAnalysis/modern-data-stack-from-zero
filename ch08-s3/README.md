@@ -1,6 +1,6 @@
 # Chapter 8 — Amazon S3
 
-Start the emulator first, in its own terminal: `moto_server -p 5000`. Then, from this folder:
+Start the emulator first, in its own terminal: `moto_server -p 5000`. On macOS, turn off the AirPlay Receiver first (System Settings → General → AirDrop & Handoff), which holds port 5000. Then, from this folder:
 
 1. `python create_lake.py` — bucket, supplier file, 37 monthly Parquet files
 2. `python read_lake.py` — read September 2023 back

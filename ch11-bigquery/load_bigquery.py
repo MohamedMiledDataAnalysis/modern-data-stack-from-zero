@@ -38,17 +38,16 @@ for table in TABLES:
         df = df[(df.order_date >= pd.Timestamp('2023-01-01').date())
                 & (df.order_date <= pd.Timestamp('2023-03-31').date())]
     schema = [bigquery.SchemaField(name, kind) for name, kind in SCHEMAS[table]]
-    if table == 'fact_orders' and MODE == 'gcp' and PARTITION:
-        # partitioned by order date, clustered by status: queries on a month read only that month
-        bq_table = bigquery.Table(f'{PROJECT}.{DATASET}.{table}', schema=schema)
-        bq_table.time_partitioning = bigquery.TimePartitioning(field='order_date')
-        bq_table.clustering_fields = ['status']
-        client.delete_table(bq_table, not_found_ok=True)
-        client.create_table(bq_table)
     buf = io.BytesIO(df.to_csv(index=False).encode())
     config = bigquery.LoadJobConfig(schema=schema, source_format=bigquery.SourceFormat.CSV,
                                     skip_leading_rows=1,
                                     write_disposition='WRITE_TRUNCATE')
+    if table == 'fact_orders' and MODE == 'gcp' and PARTITION:
+        # partitioned by order date, clustered by status: queries on a month read only that month.
+        # The load job itself carries the partitioning; an earlier unpartitioned table is removed.
+        client.delete_table(f'{PROJECT}.{DATASET}.{table}', not_found_ok=True)
+        config.time_partitioning = bigquery.TimePartitioning(field='order_date')
+        config.clustering_fields = ['status']
     job = client.load_table_from_file(buf, f'{PROJECT}.{DATASET}.{table}', job_config=config)
     job.result()                                  # waits for the load job to finish
     rows = client.get_table(f'{PROJECT}.{DATASET}.{table}').num_rows

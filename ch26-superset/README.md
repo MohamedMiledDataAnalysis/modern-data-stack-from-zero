@@ -7,3 +7,6 @@ python solutions/exercises.py   # virtual dataset, saved metric, dashboard
 ```
 
 Sign in at http://localhost:8088 as admin / meridian2026.
+
+On WSL, Superset reaches PostgreSQL at Ubuntu's own address, not `host.docker.internal`:
+`export MERIDIAN_PG_HOST=$(hostname -I | awk '{print $1}')` before `python superset_api.py`.

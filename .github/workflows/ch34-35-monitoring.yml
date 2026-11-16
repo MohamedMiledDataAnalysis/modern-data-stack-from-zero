@@ -25,6 +25,7 @@ jobs:
         run: |
           cd ch34-prometheus
           docker run --rm -v "$PWD:/cfg" --entrypoint promtool prom/prometheus:v3.16.0 check config /cfg/prometheus.yml
+          docker run --rm -v "$PWD:/cfg" --entrypoint promtool prom/prometheus:v3.16.0 check rules /cfg/solutions/alert_rules_ex2.yml
       - name: Start Prometheus
         run: |
           cd ch34-prometheus && bash start_prometheus.sh

@@ -6,10 +6,11 @@
 
 ## Homebrew (macOS, Step 2)
 
-Copy this line into the Terminal rather than typing it:
+Copy these two lines into the Terminal rather than typing them (the same lines as in the book):
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+BREW=https://raw.githubusercontent.com/Homebrew
+/bin/bash -c "$(curl -fsSL $BREW/install/HEAD/install.sh)"
 ```
 
 Then run the lines that Homebrew prints under *Next steps* (two start with `echo`, one with `eval`).
@@ -19,7 +20,10 @@ Then run the lines that Homebrew prints under *Next steps* (two start with `echo
 ```bash
 brew install openjdk@21
 sudo ln -sfn $(brew --prefix)/opt/openjdk@21/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zprofile
 ```
+
+Open a new terminal afterwards, so that `JAVA_HOME` is set.
 
 ## Run the check
 
@@ -28,3 +32,5 @@ From the repository folder, with the virtual environment active:
 ```bash
 python ch00-setup/check_setup.py
 ```
+
+It ends with `All tools found` and exits with code 0, or lists each `MISSING` tool and exits with code 1.
