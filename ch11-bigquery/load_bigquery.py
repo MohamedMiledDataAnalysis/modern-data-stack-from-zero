@@ -5,7 +5,13 @@ import pandas as pd
 from google.cloud import bigquery
 from sqlalchemy import create_engine
 
+import os
+
 from bq_config import DATASET, LOCATION, MODE, PG_URL, PROJECT, TABLES, bq_client
+
+# Partition fact_orders only on a project with billing enabled: in the sandbox, partitions
+# older than 60 days expire, and every order of 2021-2023 would be deleted at once.
+PARTITION = os.environ.get('MERIDIAN_BQ_PARTITION') == '1'
 
 SCHEMAS = {
     'dim_country': [('country_id', 'INT64'), ('country_name', 'STRING')],
@@ -33,7 +39,7 @@ for table in TABLES:
         df = df[(df.order_date >= pd.Timestamp('2023-01-01').date())
                 & (df.order_date <= pd.Timestamp('2023-03-31').date())]
     schema = [bigquery.SchemaField(name, kind) for name, kind in SCHEMAS[table]]
-    if table == 'fact_orders' and MODE == 'gcp':   # the emulator does not support partitions
+    if table == 'fact_orders' and MODE == 'gcp' and PARTITION:
         # partitioned by order date, clustered by status: queries on a month read only that month
         bq_table = bigquery.Table(f'{PROJECT}.{DATASET}.{table}', schema=schema)
         bq_table.time_partitioning = bigquery.TimePartitioning(field='order_date')
@@ -48,5 +54,5 @@ for table in TABLES:
     job.result()                                  # waits for the load job to finish
     rows = client.get_table(f'{PROJECT}.{DATASET}.{table}').num_rows
     print(f'{table:<13}{rows:>8,} rows')
-    if MODE == 'gcp' and table == 'fact_orders':
+    if MODE == 'gcp' and table == 'fact_orders' and PARTITION:
         print('partitioned by', client.get_table(f'{PROJECT}.{DATASET}.{table}').time_partitioning.field)
