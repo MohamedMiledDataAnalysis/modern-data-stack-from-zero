@@ -17,5 +17,6 @@ LOCATION = 'europe-west2'                  # London
 def gcs_client():
     if MODE == 'gcp':
         return storage.Client(project=PROJECT)
-    return storage.Client(project=PROJECT, credentials=AnonymousCredentials(),
-                          client_options={'api_endpoint': 'http://localhost:4443'})
+    return storage.Client(
+        project=PROJECT, credentials=AnonymousCredentials(),
+        client_options={'api_endpoint': 'http://localhost:4443'})

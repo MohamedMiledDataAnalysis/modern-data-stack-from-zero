@@ -15,20 +15,24 @@ if MODE == 'local':
     import warnings
 
     import fakesnow
-    # fakesnow 0.12.1 prints an internal performance notice on every query: hide it
-    warnings.filterwarnings('ignore', message='Arrow output on a DB-API result')
+    # fakesnow 0.12.1 prints a performance notice on every query
+    warnings.filterwarnings(
+        'ignore', message='Arrow output on a DB-API result')
     os.makedirs('fakesnow_data', exist_ok=True)
-    _fake = fakesnow.patch(db_path='fakesnow_data')   # keeps the tables between runs
-    _fake.__enter__()                                   # active until the script ends
+    # keep the tables in fakesnow_data/ between runs
+    _fake = fakesnow.patch(db_path='fakesnow_data')
+    _fake.__enter__()            # active until the script ends
 
 
 def sf_connect():
     if MODE == 'local':
-        conn = snowflake.connector.connect(database='MERIDIAN', schema='RAW')
-        conn.cursor().execute('CREATE SCHEMA IF NOT EXISTS MERIDIAN.RAW')
+        conn = snowflake.connector.connect(database='MERIDIAN',
+                                           schema='RAW')
+        conn.cursor().execute(
+            'CREATE SCHEMA IF NOT EXISTS MERIDIAN.RAW')
         return conn
-    secret = ({'private_key_file': os.environ['SNOWFLAKE_PRIVATE_KEY_FILE']}
-              if 'SNOWFLAKE_PRIVATE_KEY_FILE' in os.environ
+    key = os.environ.get('SNOWFLAKE_PRIVATE_KEY_FILE')
+    secret = ({'private_key_file': key} if key
               else {'password': os.environ['SNOWFLAKE_PASSWORD']})
     return snowflake.connector.connect(
         account=os.environ['SNOWFLAKE_ACCOUNT'],

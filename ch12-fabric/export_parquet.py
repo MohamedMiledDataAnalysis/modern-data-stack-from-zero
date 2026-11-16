@@ -22,7 +22,8 @@ for table in TABLES:
     fields = []
     for col in df.columns:
         if col in MONEY:
-            df[col] = [Decimal(str(v)).quantize(Decimal('0.01')) for v in df[col]]
+            df[col] = [Decimal(str(v)).quantize(Decimal('0.01'))
+                       for v in df[col]]
             fields.append(pa.field(col, MONEY[col]))
         elif col.endswith('_date'):
             df[col] = pd.to_datetime(df[col]).dt.date

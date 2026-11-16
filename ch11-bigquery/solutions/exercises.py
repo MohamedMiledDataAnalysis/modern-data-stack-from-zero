@@ -21,7 +21,8 @@ def exercise_1():
            COUNT(*) AS orders,
            ROUND(SUM(total_amount), 2) AS revenue
     FROM {T}.fact_orders
-    WHERE status = 'completed' AND order_date BETWEEN '2023-01-01' AND '2023-03-31'
+    WHERE status = 'completed'
+      AND order_date BETWEEN '2023-01-01' AND '2023-03-31'
     GROUP BY month ORDER BY month"""
     for r in client.query(sql).result():
         print(r.month, r.orders, f'{float(r.revenue):,.2f}')
@@ -31,13 +32,16 @@ def exercise_2():
     print('Exercise 2 - query parameters instead of string formatting')
     sql = f"""
     SELECT COUNT(*) AS n FROM {T}.fact_orders
-    WHERE status = @status AND order_date BETWEEN @first_day AND @last_day"""
+    WHERE status = @status
+      AND order_date BETWEEN @first_day AND @last_day"""
+    P = bigquery.ScalarQueryParameter
     config = bigquery.QueryJobConfig(query_parameters=[
-        bigquery.ScalarQueryParameter('status', 'STRING', 'returned'),
-        bigquery.ScalarQueryParameter('first_day', 'DATE', '2023-03-01'),
-        bigquery.ScalarQueryParameter('last_day', 'DATE', '2023-03-31'),
+        P('status', 'STRING', 'returned'),
+        P('first_day', 'DATE', '2023-03-01'),
+        P('last_day', 'DATE', '2023-03-31'),
     ])
-    print(list(client.query(sql, job_config=config).result())[0].n)
+    job = client.query(sql, job_config=config)
+    print(list(job.result())[0].n)
 
 
 def exercise_3():
@@ -46,12 +50,16 @@ def exercise_3():
     SELECT cat.category_name, p.product_name,
            ROUND(SUM(o.total_amount), 2) AS revenue
     FROM {T}.fact_orders AS o
-    JOIN {T}.dim_product AS p USING (product_id)
-    JOIN {T}.dim_category AS cat USING (category_id)
-    WHERE o.status = 'completed' AND o.order_date BETWEEN '2023-01-01' AND '2023-03-31'
+    JOIN {T}.dim_product AS p
+      USING (product_id)
+    JOIN {T}.dim_category AS cat
+      USING (category_id)
+    WHERE o.status = 'completed'
+      AND o.order_date BETWEEN '2023-01-01' AND '2023-03-31'
     GROUP BY cat.category_name, p.product_name
-    QUALIFY ROW_NUMBER() OVER (PARTITION BY cat.category_name
-                               ORDER BY SUM(o.total_amount) DESC) <= 3
+    QUALIFY ROW_NUMBER() OVER (
+              PARTITION BY cat.category_name
+              ORDER BY SUM(o.total_amount) DESC) <= 3
     ORDER BY cat.category_name, revenue DESC
     LIMIT 6"""
     for r in client.query(sql).result():

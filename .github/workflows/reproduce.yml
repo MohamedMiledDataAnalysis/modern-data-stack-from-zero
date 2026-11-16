@@ -77,6 +77,16 @@ jobs:
           grep -q '1096 | 108118520.21' f3.log
           grep -q '1 |       933.32 | 186.66' f3.log
 
+      - name: Chapter 1 - the mistake boxes give the printed errors
+        if: always()
+        run: |
+          export PGPASSWORD=meridian2024
+          ! psql -h localhost -U meridian_user meridian_db -c 'SELECT * FROM fact_orders WHERE status = "returned";' 2>err1
+          grep -q 'column "returned" does not exist' err1
+          ! psql -h localhost -U meridian_user meridian_db -c 'SELECT status, COUNT(*) FROM fact_orders;' 2>err2
+          grep -q 'must appear in the GROUP BY clause' err2
+          psql -h localhost -U meridian_user meridian_db -tAc "SELECT COUNT(*) FROM fact_orders WHERE status = 'Returned'" | grep -qx 0
+
       - name: SQL dialects - PostgreSQL and Spark SQL
         if: always()
         run: |
@@ -95,6 +105,9 @@ jobs:
           python solutions/exercise_3_retry.py | tail -3
           python load_supplier_stock.py | tail -3
           PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f solutions/exercise_4_below_reorder.sql | tail -4
+          # Exercise 4: Automotive, Food and Home & Garden tie on 7 products below reorder level
+          PGPASSWORD=meridian2024 psql -h localhost -U meridian_user meridian_db -Atc "SELECT c.category_name FROM supplier_stock s JOIN dim_product p USING (product_id) JOIN dim_category c USING (category_id) WHERE s.stock_qty < s.reorder_level GROUP BY 1 HAVING COUNT(*) = 7 ORDER BY 1" | tee ex4.log
+          test "$(wc -l < ex4.log)" -eq 3
       - name: Chapter 2 - SQL Server source (Linux, Docker)
         if: always() && runner.os == 'Linux'
         run: |
@@ -131,6 +144,10 @@ jobs:
           cd ~/meridian/modern-data-stack-from-zero/ch06-fivetran
           export PGPASSWORD=meridian2024
           psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f simulate_destination.sql
+          # Step 3's publication (FOR TABLES IN SCHEMA public) must not block the simulation
+          PGPASSWORD=postgres psql -h localhost -U postgres meridian_db -c "CREATE PUBLICATION fivetran_pub FOR TABLES IN SCHEMA public;"
+          psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -q -f simulate_destination.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres meridian_db -c "DROP PUBLICATION fivetran_pub;"
           psql -h localhost -U meridian_user meridian_db -v ON_ERROR_STOP=1 -f queries.sql | sed -n '1,20p'
           python solutions/mar_estimate.py
       - name: Chapter 7 - Singer tap and target
@@ -186,6 +203,10 @@ jobs:
           cd ~/meridian/meridian_dbt
           dbt debug | tail -3
           dbt build | tail -8
+          cp ~/meridian/modern-data-stack-from-zero/ch14-dbt/solutions/models/marts/*.sql models/marts/
+          mkdir -p tests && cp ~/meridian/modern-data-stack-from-zero/ch14-dbt/solutions/tests/*.sql tests/
+          dbt build | tail -3
+          dbt ls --resource-type model --select stg_orders+
       - name: Chapter 15 - Delta Lake
         if: always()
         run: |
@@ -232,6 +253,7 @@ jobs:
           jupyter nbconvert --to html --no-input out_2023-02.ipynb
           python run_all_months.py | tail -4
           python solutions/weakest_month.py | tail -4
+          papermill solutions/monthly_report_ex1.ipynb out_ex1.ipynb -p month 2023-09 2>&1 | tail -1
       - name: Chapter 21 - scikit-learn
         if: always()
         run: |
@@ -284,6 +306,9 @@ jobs:
           airflow-venv/bin/airflow version
           airflow-venv/bin/airflow db migrate > /dev/null
           airflow-venv/bin/airflow dags test meridian_nightly 2>&1 | grep -E "Marking run|state=|success|failed" | tail -8
+          cp modern-data-stack-from-zero/ch33-airflow/solutions/meridian_monthly_report.py modern-data-stack-from-zero/ch33-airflow/dags/
+          airflow-venv/bin/airflow dags test meridian_monthly_report 2023-11-01 2>&1 | grep -E "Output Notebook|state=" | tee monthly.log
+          grep -q 'state=success' monthly.log
       - name: Chapter 34 - Prometheus exporter
         if: always()
         run: |

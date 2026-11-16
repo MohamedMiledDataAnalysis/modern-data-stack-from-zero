@@ -30,7 +30,7 @@ jobs:
         run: |
           docker exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
             --topic meridian.orders --partition 0 --offset 0 --max-messages 3 \
-            --formatter-property print.key=true --formatter-property print.offset=true --formatter-property print.partition=true
+            --formatter-property print.key=true --formatter-property print.offset=true
       - name: Step 5 consumer to PostgreSQL
         run: cd ch04-kafka && python consumer.py loader-1
       - name: Step 6 run again

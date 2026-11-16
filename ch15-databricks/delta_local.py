@@ -9,12 +9,15 @@ from pyspark.sql import functions as F
 LAKE = Path.home() / 'meridian' / 'lake'
 TABLE = str(LAKE / 'delta' / 'orders')
 
-builder = (SparkSession.builder.appName('meridian-delta').master('local[*]')
-           .config('spark.sql.extensions', 'io.delta.sql.DeltaSparkSessionExtension')
-           .config('spark.sql.catalog.spark_catalog',
-                   'org.apache.spark.sql.delta.catalog.DeltaCatalog')
-           .config('spark.sql.shuffle.partitions', '4')
-           .config('spark.ui.showConsoleProgress', 'false'))
+builder = (
+    SparkSession.builder.appName('meridian-delta')
+    .master('local[*]')
+    .config('spark.sql.extensions',
+            'io.delta.sql.DeltaSparkSessionExtension')
+    .config('spark.sql.catalog.spark_catalog',
+            'org.apache.spark.sql.delta.catalog.DeltaCatalog')
+    .config('spark.sql.shuffle.partitions', '4')
+    .config('spark.ui.showConsoleProgress', 'false'))
 spark = configure_spark_with_delta_pip(builder).getOrCreate()
 spark.sparkContext.setLogLevel('ERROR')
 

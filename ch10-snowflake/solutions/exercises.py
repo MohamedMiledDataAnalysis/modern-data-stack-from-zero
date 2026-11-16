@@ -16,7 +16,8 @@ cur.execute("""
     SELECT c.COUNTRY_NAME,
            COUNT_IF(o.STATUS = 'returned') AS RETURNED,
            COUNT(*) AS ORDERS,
-           ROUND(100 * COUNT_IF(o.STATUS = 'returned') / COUNT(*), 1) AS PCT
+           ROUND(100 * COUNT_IF(o.STATUS = 'returned')
+                 / COUNT(*), 1) AS PCT
     FROM FACT_ORDERS o
     JOIN DIM_CUSTOMER cu ON cu.CUSTOMER_ID = o.CUSTOMER_ID
     JOIN DIM_COUNTRY  c  ON c.COUNTRY_ID  = cu.COUNTRY_ID

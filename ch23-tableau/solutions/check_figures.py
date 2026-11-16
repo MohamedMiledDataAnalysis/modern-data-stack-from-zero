@@ -13,7 +13,7 @@ QUERIES = {
                CAST(100.0 * SUM(CASE WHEN status = 'returned' THEN 1 ELSE 0 END) / COUNT(*) AS NUMERIC(5,2)) AS pct
         FROM "Extract"."orders"
         GROUP BY category_name ORDER BY pct DESC LIMIT 3""",
-    'Step 6 - average customer lifetime revenue per country (FIXED LOD)': """
+    'Step 6 - average customer lifetime revenue per country (INCLUDE LOD)': """
         SELECT country_name, ROUND(AVG(lifetime), 2) AS avg_lifetime FROM (
             SELECT customer_id, MIN(country_name) AS country_name,
                    SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END) AS lifetime

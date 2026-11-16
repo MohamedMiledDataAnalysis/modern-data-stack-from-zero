@@ -17,7 +17,9 @@ except NameError:
 from pyspark.sql import functions as F
 
 # Cell 1 - turn each uploaded file into a table
-for name in ['dim_country', 'dim_category', 'dim_customer', 'dim_product', 'fact_orders']:
+TABLES = ['dim_country', 'dim_category', 'dim_customer',
+          'dim_product', 'fact_orders']
+for name in TABLES:
     df = spark.read.parquet(f'{BASE}/{name}.parquet')
     df.write.mode('overwrite').saveAsTable(name)
     print(name, df.count())

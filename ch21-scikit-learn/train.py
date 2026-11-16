@@ -39,7 +39,8 @@ grid = GridSearchCV(
      'min_samples_leaf': [1, 20]},
     scoring='roc_auc', cv=5, n_jobs=-1)
 grid.fit(X_train, y_train)
-print('Best forest:', grid.best_params_, 'CV AUC', round(grid.best_score_, 3))
+print('Best forest:', grid.best_params_,
+      'CV AUC', round(grid.best_score_, 3))
 print('Forest ROC AUC on test:',
       round(roc_auc_score(y_test, grid.predict_proba(X_test)[:, 1]), 3))
 

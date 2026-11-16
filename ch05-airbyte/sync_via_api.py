@@ -1,5 +1,6 @@
 """Chapter 5 — create the Meridian source, destination and connection with
-Airbyte's API, run one sync, and print the result.
+Airbyte's API, run a first sync, insert three orders, run a second sync,
+and print the result of each.
 
 Usage: python sync_via_api.py <client_id> <client_secret> <db_host>
 (client id and secret come from:  abctl local credentials)

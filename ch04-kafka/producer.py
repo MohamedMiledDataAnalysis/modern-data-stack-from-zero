@@ -28,8 +28,10 @@ with engine.connect() as conn:
 
 for r in rows:
     event = {'order_id': r['order_id'], 'customer_id': r['customer_id'],
-             'product_id': r['product_id'], 'order_date': r['order_date'].isoformat(),
-             'quantity': r['quantity'], 'total_amount': float(r['total_amount'])}
+             'product_id': r['product_id'],
+             'order_date': r['order_date'].isoformat(),
+             'quantity': r['quantity'],
+             'total_amount': float(r['total_amount'])}
     producer.produce('meridian.orders', key=str(r['customer_id']),
                      value=json.dumps(event), on_delivery=on_delivery)
     producer.poll(0)

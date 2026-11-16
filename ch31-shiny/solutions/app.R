@@ -1,5 +1,5 @@
 # Chapter 31 — the app with Exercises 1 (daily chart) and 2 (download button)
-# Run from this folder:  Rscript -e 'shiny::runApp(port = 3838)'
+# Run from the ch31-shiny folder:  Rscript -e 'shiny::runApp("solutions", port = 3838)'
 library(shiny)
 library(bslib)
 library(DBI)
@@ -46,10 +46,12 @@ server <- function(input, output, session) {
   })
   done <- reactive(filter(view(), status == "completed"))
 
-  output$n_orders <- renderText(format(nrow(done()), big.mark = ","))
-  output$revenue <- renderText(paste0("£", format(round(sum(done()$amount)),
-                                                  big.mark = ",")))
-  output$return_rate <- renderText(sprintf("%.1f%%", 100 * mean(view()$status == "returned")))
+  output$n_orders <- renderText(
+    format(nrow(done()), big.mark = ","))
+  output$revenue <- renderText(paste0(
+    "£", format(round(sum(done()$amount)), big.mark = ",")))
+  output$return_rate <- renderText(sprintf(
+    "%.1f%%", 100 * mean(view()$status == "returned")))
   output$by_day <- renderPlot({
     done() |>
       count(day = as.integer(format(order_date, "%d")), wt = amount, name = "revenue") |>

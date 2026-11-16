@@ -17,4 +17,5 @@ print('\nExercise 2')
 m = monthly.assign(per_day=monthly['revenue_m'] / monthly['days'] * 1e3,
                    t=range(len(monthly)))
 trend = smf.ols('per_day ~ t', data=m).fit()
-print(f"slope {trend.params['t']:.3f} thousand £ per day per month, p = {trend.pvalues['t']:.3f}")
+print(f"slope {trend.params['t']:.3f} thousand £ per day "
+      f"per month, p = {trend.pvalues['t']:.3f}")

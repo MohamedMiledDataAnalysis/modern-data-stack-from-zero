@@ -21,7 +21,9 @@ CREATE TABLE dbo.gold_country_revenue AS
 SELECT c.country_name, YEAR(o.order_date) AS order_year,
        COUNT(*) AS orders, SUM(o.total_amount) AS revenue
 FROM meridian_lh.dbo.fact_orders AS o
-JOIN meridian_lh.dbo.dim_customer AS cu ON cu.customer_id = o.customer_id
-JOIN meridian_lh.dbo.dim_country  AS c  ON c.country_id  = cu.country_id
+JOIN meridian_lh.dbo.dim_customer AS cu
+  ON cu.customer_id = o.customer_id
+JOIN meridian_lh.dbo.dim_country AS c
+  ON c.country_id = cu.country_id
 WHERE o.status = 'completed'
 GROUP BY c.country_name, YEAR(o.order_date);

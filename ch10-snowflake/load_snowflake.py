@@ -8,10 +8,12 @@ from sqlalchemy import create_engine
 pg = create_engine(PG_URL)
 conn = sf_connect()
 print('mode:', MODE)
-conn.execute_string(open('create_tables.sql').read())   # runs each statement in turn
+# execute_string runs each statement of the file in turn
+conn.execute_string(open('create_tables.sql').read())
 for table in TABLES:
     df = pd.read_sql(f'SELECT * FROM {table}', pg)
-    df.columns = [c.upper() for c in df.columns]       # Snowflake's default case
+    # upper case: Snowflake's default case for unquoted names
+    df.columns = [c.upper() for c in df.columns]
     ok, chunks, rows, _ = write_pandas(conn, df, table.upper())
     print(f'{table:<13}{rows:>8,} rows  ok={ok}')
 conn.close()

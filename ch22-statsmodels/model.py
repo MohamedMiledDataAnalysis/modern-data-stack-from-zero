@@ -37,7 +37,8 @@ forecast = fit.forecast(6)
 naive = pd.Series(train.mean(), index=test.index)
 mae = (forecast - test).abs().mean()
 mae_naive = (naive - test).abs().mean()
-print(pd.DataFrame({'actual': test, 'forecast': forecast, 'naive': naive}).round(3))
+print(pd.DataFrame({'actual': test, 'forecast': forecast,
+                   'naive': naive}).round(3))
 print(f'MAE forecast {mae:.3f}  MAE naive {mae_naive:.3f}')
 
 fig, ax = plt.subplots(figsize=(7, 3))

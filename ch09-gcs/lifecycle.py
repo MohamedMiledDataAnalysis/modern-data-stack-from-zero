@@ -9,8 +9,10 @@ if MODE != 'gcp':
 
 bucket = gcs_client().get_bucket(BUCKET)
 bucket.versioning_enabled = True
-bucket.add_lifecycle_set_storage_class_rule('NEARLINE', age=30, matches_prefix=['raw/'])
-bucket.add_lifecycle_set_storage_class_rule('ARCHIVE', age=180, matches_prefix=['raw/'])
+bucket.add_lifecycle_set_storage_class_rule(
+    'NEARLINE', age=30, matches_prefix=['raw/'])
+bucket.add_lifecycle_set_storage_class_rule(
+    'ARCHIVE', age=180, matches_prefix=['raw/'])
 bucket.patch()
 
 bucket.reload()

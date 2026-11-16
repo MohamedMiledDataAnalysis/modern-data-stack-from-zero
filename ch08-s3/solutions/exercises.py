@@ -17,25 +17,32 @@ s3 = s3_client()
 
 # Exercise 1
 total, n = 0, 0
-for page in s3.get_paginator('list_objects_v2').paginate(
-        Bucket=BUCKET, Prefix='raw/orders/year=2022/'):
+pages = s3.get_paginator('list_objects_v2').paginate(
+    Bucket=BUCKET, Prefix='raw/orders/year=2022/')
+for page in pages:
     for obj in page['Contents']:
         total += obj['Size']
         n += 1
 print('Exercise 1:', n, total)
 
 # Exercise 2
-frames = [pd.read_parquet(io.BytesIO(s3.get_object(
-    Bucket=BUCKET, Key=f'raw/orders/year=2022/month={m:02d}/orders.parquet')['Body'].read()))
-    for m in range(1, 13)]
+frames = []
+for m in range(1, 13):
+    k = f'raw/orders/year=2022/month={m:02d}/orders.parquet'
+    body = s3.get_object(Bucket=BUCKET, Key=k)['Body'].read()
+    frames.append(pd.read_parquet(io.BytesIO(body)))
 df = pd.concat(frames)
 print('Exercise 2:', len(df), len(df.to_csv(index=False).encode()))
 
 # Exercise 3
-s3.upload_file('../ch02-files-apis-iot/supplier_stock.csv', BUCKET,
-               'raw/supplier_stock/2026-09-22/supplier_stock.csv')
-v = s3.list_object_versions(Bucket=BUCKET, Prefix='raw/supplier_stock/')
-print('Exercise 3:', len(v['Versions']), [x['IsLatest'] for x in v['Versions']])
+KEY = 'raw/supplier_stock/2026-09-22/supplier_stock.csv'
+s3.upload_file('../ch02-files-apis-iot/supplier_stock.csv',
+               BUCKET, KEY)
+v = s3.list_object_versions(Bucket=BUCKET,
+                            Prefix='raw/supplier_stock/')
+versions = v['Versions']
+print('Exercise 3:', len(versions), [x['IsLatest'] for x in versions])
 
-# Exercise 4
-print('Exercise 4:', round(df.loc[df.status == 'completed', 'total_amount'].sum(), 2))
+# Exercise 4 - df holds the 2022 orders of Exercise 2
+done = df[df.status == 'completed']
+print('Exercise 4:', round(done['total_amount'].sum(), 2))

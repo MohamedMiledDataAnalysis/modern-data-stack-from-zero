@@ -44,10 +44,12 @@ server <- function(input, output, session) {
   })
   done <- reactive(filter(view(), status == "completed"))
 
-  output$n_orders <- renderText(format(nrow(done()), big.mark = ","))
-  output$revenue <- renderText(paste0("£", format(round(sum(done()$amount)),
-                                                  big.mark = ",")))
-  output$return_rate <- renderText(sprintf("%.1f%%", 100 * mean(view()$status == "returned")))
+  output$n_orders <- renderText(
+    format(nrow(done()), big.mark = ","))
+  output$revenue <- renderText(paste0(
+    "£", format(round(sum(done()$amount)), big.mark = ",")))
+  output$return_rate <- renderText(sprintf(
+    "%.1f%%", 100 * mean(view()$status == "returned")))
   output$by_category <- renderPlot({
     done() |>
       count(category_name, wt = amount, name = "revenue") |>
