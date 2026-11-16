@@ -24,7 +24,7 @@ separate environments of Chapters 10, 16 and 33. Chapters that need Docker (3, 4
 | 0 | Setup | `check_setup.py` | Local, `reproduce.yml` | Installers on Windows and macOS |
 | 1 | PostgreSQL | all queries, exercises | Local, `reproduce.yml` | — |
 | 2 | Files, APIs, IoT | all scripts, mock API, MQTT simulator | Local, `reproduce.yml` | — |
-| 3 | NiFi 2.12.0 | start-up | `ch03-nifi.yml` | the canvas steps (clicks) and the flow's 500 valid / 3 rejected split |
+| 3 | NiFi 2.12.0 | start-up; the flow of Steps 3–7 built with the same settings through the REST API, 500 valid / 3 rejected | `ch03-nifi.yml` | the canvas clicks themselves; provenance screens |
 | 4 | Kafka 4.4.0 | producer, consumer, exercises | `ch04-kafka.yml` | — |
 | 5 | Airbyte 2.5.0 | install with abctl, source, destination, full and incremental syncs (through the API) | `ch05-airbyte.yml` | the same steps clicked in the web interface |
 | 6 | Fivetran | `simulate_destination.sql`, `queries.sql`, MAR estimate | Local, `reproduce.yml` | everything inside Fivetran's service |
