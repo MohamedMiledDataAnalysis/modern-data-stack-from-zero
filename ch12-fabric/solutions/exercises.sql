@@ -1,4 +1,4 @@
--- Chapter 12 corrections. Tested on SQL Server 2022; the same T-SQL runs on the Fabric SQL endpoint.
+-- Chapter 12 corrections. Tested on SQL Server 2022. The same T-SQL runs on the Fabric SQL endpoint.
 
 -- Exercise 1 - the five customers with the highest completed revenue in 2023
 SELECT TOP 5 cu.customer_id, cu.first_name, cu.last_name,
