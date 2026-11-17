@@ -25,14 +25,17 @@ finally:
 
 print('Exercise 2 — totals must equal price x quantity')
 suite = validation.suite
-suite.add_expectation(gx.expectations.UnexpectedRowsExpectation(
+rule = gx.expectations.UnexpectedRowsExpectation(
     description='total_amount equals unit_price x quantity',
     unexpected_rows_query='SELECT order_id FROM {batch} '
-                          'WHERE total_amount <> unit_price * quantity'))
+        'WHERE total_amount <> unit_price * quantity')
+suite.add_expectation(rule)
 suite.save()
 result = validation.run()
-print([(r.expectation_config.description, r.success) for r in result.results
-       if r.expectation_config.description and 'total_amount' in r.expectation_config.description])
+for r in result.results:
+    d = r.expectation_config.description
+    if d and 'total_amount' in d:
+        print([(d, r.success)])
 suite.expectations = [e for e in suite.expectations
                       if getattr(e, 'description', None) != 'total_amount equals unit_price x quantity']
 suite.save()
@@ -42,11 +45,18 @@ source = context.data_sources.get('meridian')
 if 'supplier_stock' in [a.name for a in source.assets]:
     source.delete_asset('supplier_stock')
 asset = source.add_table_asset(name='supplier_stock', table_name='supplier_stock')
-batch = asset.add_batch_definition_whole_table('all stock').get_batch()
-for exp in [gx.expectations.ExpectColumnValuesToBeUnique(column='product_id'),
-            gx.expectations.ExpectColumnValuesToBeBetween(column='stock_qty', min_value=0),
-            gx.expectations.ExpectColumnValuesToBeInSet(column='reorder_level',
-                                                        value_set=[20, 50, 100])]:
+batch = (asset.add_batch_definition_whole_table('all stock')
+         .get_batch())
+E = gx.expectations
+rules = [
+    E.ExpectColumnValuesToBeUnique(column='product_id'),
+    E.ExpectColumnValuesToBeBetween(column='stock_qty',
+                                    min_value=0),
+    E.ExpectColumnValuesToBeInSet(column='reorder_level',
+                                  value_set=[20, 50, 100]),
+]
+for exp in rules:
     r = batch.validate(exp)
-    print('PASS' if r.success else 'FAIL', type(exp).__name__, exp.column)
+    status = 'PASS' if r.success else 'FAIL'
+    print(status, type(exp).__name__, exp.column)
 source.delete_asset('supplier_stock')
