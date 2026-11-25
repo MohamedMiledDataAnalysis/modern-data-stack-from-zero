@@ -74,3 +74,8 @@ Every chapter has its own folder. Each folder holds the files you type in the ch
 Type the code yourself first, from the book. Come here to compare your files with the reference, or when you are stuck. Copying files you have not typed teaches you much less.
 
 See [TESTING.md](TESTING.md) for how each chapter was tested and which steps were written from documentation.
+
+## Licence
+
+- **Code**: MIT licence (see `LICENSE`). Reuse it freely in your own projects.
+- **Written material** (solutions, corrections, READMEs, guides, documents and data files): © 2026 Mohamed Miled, all rights reserved, like the book *The Modern Data Stack*. Read it and study with it; do not copy, republish or sell it (see `LICENSE-TEXT.md`).
